@@ -61,9 +61,12 @@ uint32_t buffer2[W * 8 / 2];
 //Image buffer1(W, 8);
 //Image buffer2(W, 8);
 
+inline void drawTileRow(uint32_t *buffer, const int bufferOffset, const int tileOffset, const int yOffsetRemainder, const int y, const int x) __attribute__((always_inline));
+
 void setup() {
   gb.begin();
   gb.display.init(0, 0, ColorMode::rgb565);
+  gb.setFrameRate(40);
   
   SerialUSB.begin(9600);
 }
@@ -130,9 +133,12 @@ void draw() {
     gb.tft.drawBuffer(0, row * 8, buffer->_buffer, 160, 8);
   }
   */
-
+  
   for (int row = 0; row < H / 8; row++) {
     uint32_t *buffer = row % 2 == 0 ? (uint32_t *)&buffer1 : (uint32_t *)&buffer2;
+
+    int yIndex = offsetY / 8 + row;
+    int yOffsetRemainder = offsetY % 8;
 
     for (int xIndex = 0; xIndex < W / 8; xIndex++) {
       int tileOffset = layer2[row][xIndex] * 8 * 8 / 2;
@@ -146,18 +152,45 @@ void draw() {
     }
     
     for (int xIndex = 0; xIndex < W / 8; xIndex++) {
-      int tileOffset = layer1[row][xIndex] * 8 * 8 / 2;
+      int tileOffset = layer1[yIndex][xIndex] * 8 * 8 / 2;
       int bufferOffset = xIndex * 8 / 2;
-      for (int y = 0; y < 8; y++) {
-        if (sample_tilesData[tileOffset + 0 + y * 8 / 2] != 0xE007E007) buffer[bufferOffset + 0 + y * W / 2] = sample_tilesData[tileOffset + 0 + y * 8 / 2];
-        if (sample_tilesData[tileOffset + 1 + y * 8 / 2] != 0xE007E007) buffer[bufferOffset + 1 + y * W / 2] = sample_tilesData[tileOffset + 1 + y * 8 / 2];
-        if (sample_tilesData[tileOffset + 2 + y * 8 / 2] != 0xE007E007) buffer[bufferOffset + 2 + y * W / 2] = sample_tilesData[tileOffset + 2 + y * 8 / 2];
-        if (sample_tilesData[tileOffset + 3 + y * 8 / 2] != 0xE007E007) buffer[bufferOffset + 3 + y * W / 2] = sample_tilesData[tileOffset + 3 + y * 8 / 2];
+      for (int y = yOffsetRemainder; y < 8; y++) {
+        drawTileRow(buffer, bufferOffset, tileOffset, yOffsetRemainder, y, 0);
+        drawTileRow(buffer, bufferOffset, tileOffset, yOffsetRemainder, y, 1);
+        drawTileRow(buffer, bufferOffset, tileOffset, yOffsetRemainder, y, 2);
+        drawTileRow(buffer, bufferOffset, tileOffset, yOffsetRemainder, y, 3);
       }
+      
+      tileOffset = layer1[yIndex+1][xIndex] * 8 * 8 / 2;
+      for (int y = 0; y < yOffsetRemainder; y++) {
+        drawTileRow(buffer, bufferOffset, tileOffset, yOffsetRemainder - 8, y, 0);
+        drawTileRow(buffer, bufferOffset, tileOffset, yOffsetRemainder - 8, y, 1);
+        drawTileRow(buffer, bufferOffset, tileOffset, yOffsetRemainder - 8, y, 2);
+        drawTileRow(buffer, bufferOffset, tileOffset, yOffsetRemainder - 8, y, 3);
+      }
+      
     }
 
     gb.tft.andy();
     gb.tft.drawBuffer(0, row * 8, (uint16_t *)buffer, W, 8);
+  }
+}
+
+
+inline void drawTileRow(uint32_t *buffer, const int bufferOffset, const int tileOffset, const int yOffsetRemainder, const int y, const int x) {
+  if ((sample_tilesData[tileOffset + x + y * 8 / 2] & 0xffff0000) == 0xE0070000) {
+    if ((sample_tilesData[tileOffset + x + y * 8 / 2] & 0xffff) == 0xE007) {
+      // do nothing
+    }
+    else {
+      buffer[bufferOffset + x + (y - yOffsetRemainder) * W / 2] = (buffer[bufferOffset + x + (y - yOffsetRemainder) * W / 2] & 0xffff0000) | (sample_tilesData[tileOffset + x + y * 8 / 2] & 0xffff);
+    }
+  }
+  else if ((sample_tilesData[tileOffset + x + y * 8 / 2] & 0xffff) == 0xE007) {
+    buffer[bufferOffset + x + (y - yOffsetRemainder) * W / 2] = (buffer[bufferOffset + x + (y - yOffsetRemainder) * W / 2] & 0xffff) | (sample_tilesData[tileOffset + x + y * 8 / 2] & 0xffff0000);
+  }
+  else {
+    buffer[bufferOffset + x + (y - yOffsetRemainder) * W / 2] = sample_tilesData[tileOffset + x + y * 8 / 2];
   }
 }
 

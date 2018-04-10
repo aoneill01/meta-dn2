@@ -12,21 +12,20 @@ void Main()
 	
 	for (int y = 0; y < tiles.Height; y++)
 	{
-		for (int x = 0; x < tiles.Width; x += 2) 
+		for (int x = 0; x < tiles.Width; x ++) 
 		{
-			string firstHex = ToZeroPaddedHex4(SwapEndian16(ColorToRgb565(tiles.GetPixel(x, y))));
-			string secondHex = ToZeroPaddedHex4(SwapEndian16(ColorToRgb565(tiles.GetPixel(x + 1, y))));
+			string hex = ToZeroPaddedHex4(SwapEndian16(ColorToRgb565(tiles.GetPixel(x, y))));
 			
 			if (!string.IsNullOrEmpty(result)) 
 			{
 				result += ", ";
 			}
 			
-			result += "0x" + secondHex + firstHex;
+			result += "0x" + hex;
 		}
 	}
 	
-	result = "const uint32_t sample_tilesData[] = { " + result + " };";
+	result = "const uint16_t sample_tilesData[] = { " + result + " };";
 	result.Dump();
 }
 

@@ -3,6 +3,9 @@
 #define W 160
 #define H 128
 
+#define TILE_SIZE 8
+#define SLICE_HEIGHT 8
+
 #define LAYER_WIDTH 30
 #define LAYER_HEIGHT 20
 uint8_t layer1[LAYER_HEIGHT][LAYER_WIDTH] = {
@@ -59,12 +62,12 @@ const uint16_t sample_tilesData[] = { 0xE007, 0xE007, 0xE007, 0xE007, 0xE007, 0x
 uint16_t buffer1[W * 8];
 uint16_t buffer2[W * 8];
 
-inline void drawTileRow(uint16_t *buffer, const int bufferOffset, const int tileOffset, const int yOffsetRemainder, const int y, const int x) __attribute__((always_inline));
+inline void drawTileRow(uint16_t *buffer, const int bufferOffset, const int tileOffset, const int yOffsetRemainder, const int xOffsetRemainder, const int y, const int x) __attribute__((always_inline));
 
 void setup() {
   gb.begin();
   gb.display.init(0, 0, ColorMode::rgb565);
-  //gb.setFrameRate(40);
+  // gb.setFrameRate(40);
   
   SerialUSB.begin(9600);
 }
@@ -99,16 +102,22 @@ void loop() {
 }
 
 void draw() {
-  for (int row = 0; row < H / 8; row++) {
-    uint16_t *buffer = row % 2 == 0 ? (uint16_t *)&buffer1 : (uint16_t *)&buffer2;
+  // Draw slices of the screen, each 8 pixels tall
+  for (int sliceIndex = 0; sliceIndex < H / SLICE_HEIGHT; sliceIndex++) {
+    // 2 buffers so we can be filling the next one while the current one is being sent to the screen
+    uint16_t *buffer = sliceIndex % 2 == 0 ? (uint16_t *)&buffer1 : (uint16_t *)&buffer2;
 
-    int yIndex = offsetY / 8 + row;
-    int yOffsetRemainder = offsetY % 8;
+    // Draw the background layer, no transparency
+    int yIndex = (offsetY / 2) / TILE_SIZE + sliceIndex;
+    int yOffsetRemainder = (offsetY / 2) % TILE_SIZE;
 
-    for (int xIndex = 0; xIndex < W / 8; xIndex++) {
-      int tileOffset = layer2[row][xIndex] * 8 * 8;
-      int bufferOffset = xIndex * 8;
-      for (int y = 0; y < 8; y++) {
+    int xIndexStart = (offsetX / 2) / TILE_SIZE;
+    int xOffsetRemainder = (offsetX / 2) % TILE_SIZE;
+
+    for (int xIndex = 0; xIndex < W / TILE_SIZE; xIndex++) {
+      int tileOffset = layer2[sliceIndex][xIndex] * TILE_SIZE * TILE_SIZE;
+      int bufferOffset = xIndex * TILE_SIZE;
+      for (int y = 0; y < TILE_SIZE; y++) {
         buffer[bufferOffset + 0 + y * W] = sample_tilesData[tileOffset + 0 + y * 8];
         buffer[bufferOffset + 1 + y * W] = sample_tilesData[tileOffset + 1 + y * 8];
         buffer[bufferOffset + 2 + y * W] = sample_tilesData[tileOffset + 2 + y * 8];
@@ -119,47 +128,53 @@ void draw() {
         buffer[bufferOffset + 7 + y * W] = sample_tilesData[tileOffset + 7 + y * 8];
       }
     }
-    
-    for (int xIndex = 0; xIndex < W / 8; xIndex++) {
-      int tileOffset = layer1[yIndex][xIndex] * 8 * 8;
-      int bufferOffset = xIndex * 8;
-      for (int y = yOffsetRemainder; y < 8; y++) {
-        drawTileRow(buffer, bufferOffset, tileOffset, yOffsetRemainder, y, 0);
-        drawTileRow(buffer, bufferOffset, tileOffset, yOffsetRemainder, y, 1);
-        drawTileRow(buffer, bufferOffset, tileOffset, yOffsetRemainder, y, 2);
-        drawTileRow(buffer, bufferOffset, tileOffset, yOffsetRemainder, y, 3);
-        drawTileRow(buffer, bufferOffset, tileOffset, yOffsetRemainder, y, 4);
-        drawTileRow(buffer, bufferOffset, tileOffset, yOffsetRemainder, y, 5);
-        drawTileRow(buffer, bufferOffset, tileOffset, yOffsetRemainder, y, 6);
-        drawTileRow(buffer, bufferOffset, tileOffset, yOffsetRemainder, y, 7);
+
+    // Draw the foreground layer, with transparency
+    yIndex = offsetY / TILE_SIZE + sliceIndex;
+    yOffsetRemainder = offsetY % TILE_SIZE;
+
+    xIndexStart = offsetX / TILE_SIZE;
+    xOffsetRemainder = offsetX % TILE_SIZE;
+
+    for (int xIndexOffset = 1; xIndexOffset < W / TILE_SIZE; xIndexOffset++) {
+      // Handle top half of tiles in this slice
+      int tileOffset = layer1[yIndex][xIndexStart + xIndexOffset] * TILE_SIZE * TILE_SIZE;
+      int bufferOffset = xIndexOffset * TILE_SIZE;
+
+      for (int y = yOffsetRemainder; y < TILE_SIZE; y++) {
+        drawTileRow(buffer, bufferOffset, tileOffset, yOffsetRemainder, xOffsetRemainder, y, 0);
+        drawTileRow(buffer, bufferOffset, tileOffset, yOffsetRemainder, xOffsetRemainder, y, 1);
+        drawTileRow(buffer, bufferOffset, tileOffset, yOffsetRemainder, xOffsetRemainder, y, 2);
+        drawTileRow(buffer, bufferOffset, tileOffset, yOffsetRemainder, xOffsetRemainder, y, 3);
+        drawTileRow(buffer, bufferOffset, tileOffset, yOffsetRemainder, xOffsetRemainder, y, 4);
+        drawTileRow(buffer, bufferOffset, tileOffset, yOffsetRemainder, xOffsetRemainder, y, 5);
+        drawTileRow(buffer, bufferOffset, tileOffset, yOffsetRemainder, xOffsetRemainder, y, 6);
+        drawTileRow(buffer, bufferOffset, tileOffset, yOffsetRemainder, xOffsetRemainder, y, 7);
       }
       
-      tileOffset = layer1[yIndex+1][xIndex] * 8 * 8;
+      // Handle bottom half of tiles in this slice
+      tileOffset = layer1[yIndex+1][xIndexStart + xIndexOffset] * TILE_SIZE * TILE_SIZE;
+      
       for (int y = 0; y < yOffsetRemainder; y++) {
-        drawTileRow(buffer, bufferOffset, tileOffset, yOffsetRemainder - 8, y, 0);
-        drawTileRow(buffer, bufferOffset, tileOffset, yOffsetRemainder - 8, y, 1);
-        drawTileRow(buffer, bufferOffset, tileOffset, yOffsetRemainder - 8, y, 2);
-        drawTileRow(buffer, bufferOffset, tileOffset, yOffsetRemainder - 8, y, 3);
-        drawTileRow(buffer, bufferOffset, tileOffset, yOffsetRemainder - 8, y, 4);
-        drawTileRow(buffer, bufferOffset, tileOffset, yOffsetRemainder - 8, y, 5);
-        drawTileRow(buffer, bufferOffset, tileOffset, yOffsetRemainder - 8, y, 6);
-        drawTileRow(buffer, bufferOffset, tileOffset, yOffsetRemainder - 8, y, 7);
-      }
-      
+        drawTileRow(buffer, bufferOffset, tileOffset, yOffsetRemainder - 8, xOffsetRemainder, y, 0);
+        drawTileRow(buffer, bufferOffset, tileOffset, yOffsetRemainder - 8, xOffsetRemainder, y, 1);
+        drawTileRow(buffer, bufferOffset, tileOffset, yOffsetRemainder - 8, xOffsetRemainder, y, 2);
+        drawTileRow(buffer, bufferOffset, tileOffset, yOffsetRemainder - 8, xOffsetRemainder, y, 3);
+        drawTileRow(buffer, bufferOffset, tileOffset, yOffsetRemainder - 8, xOffsetRemainder, y, 4);
+        drawTileRow(buffer, bufferOffset, tileOffset, yOffsetRemainder - 8, xOffsetRemainder, y, 5);
+        drawTileRow(buffer, bufferOffset, tileOffset, yOffsetRemainder - 8, xOffsetRemainder, y, 6);
+        drawTileRow(buffer, bufferOffset, tileOffset, yOffsetRemainder - 8, xOffsetRemainder, y, 7);
+      }      
     }
 
     gb.tft.andy();
-    gb.tft.drawBuffer(0, row * 8, buffer, W, 8);
+    gb.tft.drawBuffer(0, sliceIndex * SLICE_HEIGHT, buffer, W, SLICE_HEIGHT);
   }
 }
 
-
-inline void drawTileRow(uint16_t *buffer, const int bufferOffset, const int tileOffset, const int yOffsetRemainder, const int y, const int x) {
-  if ((sample_tilesData[tileOffset + x + y * 8]) == 0xE007) {
-    // do nothing
-  }
-  else {
-    buffer[bufferOffset + x + (y - yOffsetRemainder) * W] = sample_tilesData[tileOffset + x + y * 8];
+inline void drawTileRow(uint16_t *buffer, const int bufferOffset, const int tileOffset, const int yOffsetRemainder, const int xOffsetRemainder, const int y, const int x) {
+  if ((sample_tilesData[tileOffset + x + y * 8]) != 0xE007) {
+    buffer[bufferOffset + x - xOffsetRemainder + (y - yOffsetRemainder) * W] = sample_tilesData[tileOffset + x + y * 8];
   }
 }
 

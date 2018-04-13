@@ -77,22 +77,22 @@ void loop() {
 
   if (gb.buttons.repeat(Button::right, 0)) {
     if (LAYER_WIDTH * 8 - offsetX > W) {
-      offsetX += 1;
+      offsetX += 2;
     }
   }
   if (gb.buttons.repeat(Button::left, 0)) {
     if (offsetX > 0) {
-      offsetX -= 1;
+      offsetX -= 2;
     }
   }
   if (gb.buttons.repeat(Button::down, 0)) {
     if (LAYER_HEIGHT * 8 - offsetY > H) {
-      offsetY += 1;
+      offsetY += 2;
     }
   }
   if (gb.buttons.repeat(Button::up, 0)) {
     if (offsetY > 0) {
-      offsetY -= 1;
+      offsetY -= 2;
     }
   }
   
@@ -114,18 +114,32 @@ void draw() {
     int xIndexStart = (offsetX / 2) / TILE_SIZE;
     int xOffsetRemainder = (offsetX / 2) % TILE_SIZE;
 
-    for (int xIndex = 0; xIndex < W / TILE_SIZE; xIndex++) {
-      int tileOffset = layer2[sliceIndex][xIndex] * TILE_SIZE * TILE_SIZE;
-      int bufferOffset = xIndex * TILE_SIZE;
-      for (int y = 0; y < TILE_SIZE; y++) {
-        buffer[bufferOffset + 0 + y * W] = sample_tilesData[tileOffset + 0 + y * 8];
-        buffer[bufferOffset + 1 + y * W] = sample_tilesData[tileOffset + 1 + y * 8];
-        buffer[bufferOffset + 2 + y * W] = sample_tilesData[tileOffset + 2 + y * 8];
-        buffer[bufferOffset + 3 + y * W] = sample_tilesData[tileOffset + 3 + y * 8];
-        buffer[bufferOffset + 4 + y * W] = sample_tilesData[tileOffset + 4 + y * 8];
-        buffer[bufferOffset + 5 + y * W] = sample_tilesData[tileOffset + 5 + y * 8];
-        buffer[bufferOffset + 6 + y * W] = sample_tilesData[tileOffset + 6 + y * 8];
-        buffer[bufferOffset + 7 + y * W] = sample_tilesData[tileOffset + 7 + y * 8];
+    for (int xIndexOffset = 1; xIndexOffset < W / TILE_SIZE; xIndexOffset++) {
+      int tileOffset = layer2[yIndex][xIndexStart + xIndexOffset] * TILE_SIZE * TILE_SIZE;
+      int bufferOffset = xIndexOffset * TILE_SIZE;
+      
+      for (int y = yOffsetRemainder; y < TILE_SIZE; y++) {
+        buffer[bufferOffset + 0 - xOffsetRemainder + (y - yOffsetRemainder) * W] = sample_tilesData[tileOffset + 0 + y * TILE_SIZE];
+        buffer[bufferOffset + 1 - xOffsetRemainder + (y - yOffsetRemainder) * W] = sample_tilesData[tileOffset + 1 + y * TILE_SIZE];
+        buffer[bufferOffset + 2 - xOffsetRemainder + (y - yOffsetRemainder) * W] = sample_tilesData[tileOffset + 2 + y * TILE_SIZE];
+        buffer[bufferOffset + 3 - xOffsetRemainder + (y - yOffsetRemainder) * W] = sample_tilesData[tileOffset + 3 + y * TILE_SIZE];
+        buffer[bufferOffset + 4 - xOffsetRemainder + (y - yOffsetRemainder) * W] = sample_tilesData[tileOffset + 4 + y * TILE_SIZE];
+        buffer[bufferOffset + 5 - xOffsetRemainder + (y - yOffsetRemainder) * W] = sample_tilesData[tileOffset + 5 + y * TILE_SIZE];
+        buffer[bufferOffset + 6 - xOffsetRemainder + (y - yOffsetRemainder) * W] = sample_tilesData[tileOffset + 6 + y * TILE_SIZE];
+        buffer[bufferOffset + 7 - xOffsetRemainder + (y - yOffsetRemainder) * W] = sample_tilesData[tileOffset + 7 + y * TILE_SIZE];
+      }
+
+      tileOffset = layer2[yIndex + 1][xIndexStart + xIndexOffset] * TILE_SIZE * TILE_SIZE;
+      
+      for (int y = 0; y < yOffsetRemainder; y++) {
+        buffer[bufferOffset + 0 - xOffsetRemainder + (y - yOffsetRemainder + TILE_SIZE) * W] = sample_tilesData[tileOffset + 0 + y * TILE_SIZE];
+        buffer[bufferOffset + 1 - xOffsetRemainder + (y - yOffsetRemainder + TILE_SIZE) * W] = sample_tilesData[tileOffset + 1 + y * TILE_SIZE];
+        buffer[bufferOffset + 2 - xOffsetRemainder + (y - yOffsetRemainder + TILE_SIZE) * W] = sample_tilesData[tileOffset + 2 + y * TILE_SIZE];
+        buffer[bufferOffset + 3 - xOffsetRemainder + (y - yOffsetRemainder + TILE_SIZE) * W] = sample_tilesData[tileOffset + 3 + y * TILE_SIZE];
+        buffer[bufferOffset + 4 - xOffsetRemainder + (y - yOffsetRemainder + TILE_SIZE) * W] = sample_tilesData[tileOffset + 4 + y * TILE_SIZE];
+        buffer[bufferOffset + 5 - xOffsetRemainder + (y - yOffsetRemainder + TILE_SIZE) * W] = sample_tilesData[tileOffset + 5 + y * TILE_SIZE];
+        buffer[bufferOffset + 6 - xOffsetRemainder + (y - yOffsetRemainder + TILE_SIZE) * W] = sample_tilesData[tileOffset + 6 + y * TILE_SIZE];
+        buffer[bufferOffset + 7 - xOffsetRemainder + (y - yOffsetRemainder + TILE_SIZE) * W] = sample_tilesData[tileOffset + 7 + y * TILE_SIZE];
       }
     }
 
@@ -156,14 +170,14 @@ void draw() {
       tileOffset = layer1[yIndex+1][xIndexStart + xIndexOffset] * TILE_SIZE * TILE_SIZE;
       
       for (int y = 0; y < yOffsetRemainder; y++) {
-        drawTileRow(buffer, bufferOffset, tileOffset, yOffsetRemainder - 8, xOffsetRemainder, y, 0);
-        drawTileRow(buffer, bufferOffset, tileOffset, yOffsetRemainder - 8, xOffsetRemainder, y, 1);
-        drawTileRow(buffer, bufferOffset, tileOffset, yOffsetRemainder - 8, xOffsetRemainder, y, 2);
-        drawTileRow(buffer, bufferOffset, tileOffset, yOffsetRemainder - 8, xOffsetRemainder, y, 3);
-        drawTileRow(buffer, bufferOffset, tileOffset, yOffsetRemainder - 8, xOffsetRemainder, y, 4);
-        drawTileRow(buffer, bufferOffset, tileOffset, yOffsetRemainder - 8, xOffsetRemainder, y, 5);
-        drawTileRow(buffer, bufferOffset, tileOffset, yOffsetRemainder - 8, xOffsetRemainder, y, 6);
-        drawTileRow(buffer, bufferOffset, tileOffset, yOffsetRemainder - 8, xOffsetRemainder, y, 7);
+        drawTileRow(buffer, bufferOffset, tileOffset, yOffsetRemainder - TILE_SIZE, xOffsetRemainder, y, 0);
+        drawTileRow(buffer, bufferOffset, tileOffset, yOffsetRemainder - TILE_SIZE, xOffsetRemainder, y, 1);
+        drawTileRow(buffer, bufferOffset, tileOffset, yOffsetRemainder - TILE_SIZE, xOffsetRemainder, y, 2);
+        drawTileRow(buffer, bufferOffset, tileOffset, yOffsetRemainder - TILE_SIZE, xOffsetRemainder, y, 3);
+        drawTileRow(buffer, bufferOffset, tileOffset, yOffsetRemainder - TILE_SIZE, xOffsetRemainder, y, 4);
+        drawTileRow(buffer, bufferOffset, tileOffset, yOffsetRemainder - TILE_SIZE, xOffsetRemainder, y, 5);
+        drawTileRow(buffer, bufferOffset, tileOffset, yOffsetRemainder - TILE_SIZE, xOffsetRemainder, y, 6);
+        drawTileRow(buffer, bufferOffset, tileOffset, yOffsetRemainder - TILE_SIZE, xOffsetRemainder, y, 7);
       }      
     }
 
@@ -174,7 +188,7 @@ void draw() {
 
 inline void drawTileRow(uint16_t *buffer, const int bufferOffset, const int tileOffset, const int yOffsetRemainder, const int xOffsetRemainder, const int y, const int x) {
   if ((sample_tilesData[tileOffset + x + y * 8]) != 0xE007) {
-    buffer[bufferOffset + x - xOffsetRemainder + (y - yOffsetRemainder) * W] = sample_tilesData[tileOffset + x + y * 8];
+    buffer[bufferOffset + x - xOffsetRemainder + (y - yOffsetRemainder) * W] = sample_tilesData[tileOffset + x + y * TILE_SIZE];
   }
 }
 

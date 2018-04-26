@@ -4,7 +4,7 @@
 
 void Main()
 {
-	Bitmap character = (Bitmap)Image.FromFile(Path.Combine(Path.GetDirectoryName(Util.CurrentQueryPath), "..\\Assets\\character.png"), true);
+	Bitmap character = (Bitmap)Image.FromFile(Path.Combine(Path.GetDirectoryName(Util.CurrentQueryPath), "..\\Assets\\run.png"), true);
 	
 	character.Dump();
 	
@@ -31,6 +31,7 @@ void Main()
 
 int ColorToRgb565(Color color) 
 {
+	if (color.A != 255) return 0xFC << 3;
 	return ((color.R & 0xF8) << 8) | ((color.G & 0xFC) << 3) | (color.B >> 3);
 }
 

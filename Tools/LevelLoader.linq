@@ -4,7 +4,7 @@
 
 void Main()
 {
-	Bitmap map = (Bitmap)Image.FromFile(Path.Combine(Path.GetDirectoryName(Util.CurrentQueryPath), "..\\Assets\\level.png"), true);
+	Bitmap map = (Bitmap)Image.FromFile(Path.Combine(Path.GetDirectoryName(Util.CurrentQueryPath), "..\\Assets\\level2.png"), true);
 	
 	map.Dump();
 	

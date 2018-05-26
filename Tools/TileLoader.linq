@@ -2,9 +2,10 @@
   <Namespace>System.Drawing</Namespace>
 </Query>
 
+
 void Main()
 {
-	Bitmap tiles = (Bitmap)Image.FromFile(Path.Combine(Path.GetDirectoryName(Util.CurrentQueryPath), "..\\Assets\\sample-tiles.png"), true);
+	Bitmap tiles = (Bitmap)Image.FromFile(Path.Combine(Path.GetDirectoryName(Util.CurrentQueryPath), "..\\Assets\\sample-tiles2.png"), true);
 	
 	tiles.Dump();
 	

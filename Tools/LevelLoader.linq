@@ -2,6 +2,8 @@
   <Namespace>System.Drawing</Namespace>
 </Query>
 
+
+
 void Main()
 {
 	Bitmap map = (Bitmap)Image.FromFile(Path.Combine(Path.GetDirectoryName(Util.CurrentQueryPath), "..\\Assets\\level2.png"), true);
@@ -20,23 +22,14 @@ void Main()
 				tmp += ", ";
 			}
 			
-			string left = "30";
-			string right = "31";
 			if (!IsSolid(map, x, y)) {
 				tmp += "0, 0";
 			}
 			else {
-				if (!IsSolid(map, x, y - 1) && IsSolid(map, x - 1, y)) left = "9";
-				else if (!IsSolid(map, x, y - 1) && !IsSolid(map, x - 1, y)) left = "1";
-				else if (IsSolid(map, x, y - 1) && !IsSolid(map, x - 1, y)) left = "3";
+				int tile = GetTile(map, x, y);
 				
-				if (!IsSolid(map, x, y - 1) && IsSolid(map, x + 1, y)) right = "10";
-				else if (!IsSolid(map, x, y - 1) && !IsSolid(map, x + 1, y)) right = "5";
-				else if (IsSolid(map, x, y - 1) && !IsSolid(map, x + 1, y)) right = "7";
-				
-				tmp += left + ", " + right;
+				tmp += (START_INDEX + tile * 4) + ", " + (START_INDEX + tile * 4 + 1);
 			}
-		
 		}
 		result += "{" + tmp + "},\n";
 		tmp = "";
@@ -48,21 +41,13 @@ void Main()
 				tmp += ", ";
 			}
 			
-			string left = "32";
-			string right = "33";
 			if (!IsSolid(map, x, y)) {
 				tmp += "0, 0";
 			}
 			else {
-				if (!IsSolid(map, x, y + 1) && IsSolid(map, x - 1, y)) left = "11";
-				else if (!IsSolid(map, x, y + 1) && !IsSolid(map, x - 1, y)) left = "4";
-				else if (IsSolid(map, x, y + 1) && !IsSolid(map, x - 1, y)) left = "2";
+				int tile = GetTile(map, x, y);
 				
-				if (!IsSolid(map, x, y + 1) && IsSolid(map, x + 1, y)) right = "12";
-				else if (!IsSolid(map, x, y + 1) && !IsSolid(map, x + 1, y)) right = "8";
-				else if (IsSolid(map, x, y + 1) && !IsSolid(map, x + 1, y)) right = "6";
-				
-				tmp += left + ", " + right;
+				tmp += (START_INDEX + tile * 4 + 2) + ", " + (START_INDEX + tile * 4 + 3);
 			}
 		
 		}
@@ -73,7 +58,105 @@ void Main()
 	result.Dump();
 }
 
-bool IsSolid(Bitmap map, int x, int y) {
+static int START_INDEX = 35;
+
+static int INTERIOR_1 = 4;
+static int INTERIOR_2 = 20;
+static int INTERIOR_3 = 21;
+static int NORTH_WEST_CORNER = 0;
+static int NORTH_EDGE = 1;
+static int NORTH_EAST_CORNER = 2;
+static int WEST_EDGE = 3;
+static int EAST_EDGE = 5;
+static int SOUTH_WEST_CORNER = 6;
+static int SOUTH_EDGE = 7;
+static int SOUTH_EAST_CORNER = 8;
+static int NORTH_VERTICAL = 9;
+static int MIDDLE_VERTICAL = 10;
+static int SOUTH_VERTICAL = 11;
+static int WEST_HORIZONTAL = 12;
+static int MIDDLE_HORIZONTAL = 13;
+static int EAST_HORIZONTAL = 14;
+static int ONE_BY_ONE = 15;
+static int SOUTH_EAST_BEND = 16;
+static int SOUTH_WEST_BEND = 17;
+static int NORTH_EAST_BEND = 18;
+static int NORTH_WEST_BEND = 19;
+
+int GetTile(Bitmap map, int x, int y) 
+{
+	if (!IsNorthSolid(map, x, y) && IsEastSolid(map, x, y) && IsSouthSolid(map, x, y) && !IsWestSolid(map, x, y)) return NORTH_WEST_CORNER;
+	if (!IsNorthSolid(map, x, y) && IsEastSolid(map, x, y) && IsSouthSolid(map, x, y) && IsWestSolid(map, x, y)) return NORTH_EDGE;
+	if (!IsNorthSolid(map, x, y) && !IsEastSolid(map, x, y) && IsSouthSolid(map, x, y) && IsWestSolid(map, x, y)) return NORTH_EAST_CORNER;
+	if (!IsNorthSolid(map, x, y) && IsEastSolid(map, x, y) && IsSouthSolid(map, x, y) && !IsWestSolid(map, x, y)) return NORTH_WEST_CORNER;
+	if (IsNorthSolid(map, x, y) && IsEastSolid(map, x, y) && IsSouthSolid(map, x, y) && !IsWestSolid(map, x, y)) return WEST_EDGE;
+	if (IsNorthSolid(map, x, y) && !IsEastSolid(map, x, y) && IsSouthSolid(map, x, y) && IsWestSolid(map, x, y)) return EAST_EDGE;
+	if (IsNorthSolid(map, x, y) && IsEastSolid(map, x, y) && !IsSouthSolid(map, x, y) && !IsWestSolid(map, x, y)) return SOUTH_WEST_CORNER;
+	if (IsNorthSolid(map, x, y) && IsEastSolid(map, x, y) && !IsSouthSolid(map, x, y) && IsWestSolid(map, x, y)) return SOUTH_EDGE;
+	if (IsNorthSolid(map, x, y) && !IsEastSolid(map, x, y) && !IsSouthSolid(map, x, y) && IsWestSolid(map, x, y)) return SOUTH_EAST_CORNER;
+	if (!IsNorthSolid(map, x, y) && !IsEastSolid(map, x, y) && IsSouthSolid(map, x, y) && !IsWestSolid(map, x, y)) return NORTH_VERTICAL;
+	if (IsNorthSolid(map, x, y) && !IsEastSolid(map, x, y) && IsSouthSolid(map, x, y) && !IsWestSolid(map, x, y)) return MIDDLE_VERTICAL;
+	if (IsNorthSolid(map, x, y) && !IsEastSolid(map, x, y) && !IsSouthSolid(map, x, y) && !IsWestSolid(map, x, y)) return SOUTH_VERTICAL;
+	if (!IsNorthSolid(map, x, y) && IsEastSolid(map, x, y) && !IsSouthSolid(map, x, y) && !IsWestSolid(map, x, y)) return WEST_HORIZONTAL;
+	if (!IsNorthSolid(map, x, y) && IsEastSolid(map, x, y) && !IsSouthSolid(map, x, y) && IsWestSolid(map, x, y)) return MIDDLE_HORIZONTAL;
+	if (!IsNorthSolid(map, x, y) && !IsEastSolid(map, x, y) && !IsSouthSolid(map, x, y) && IsWestSolid(map, x, y)) return EAST_HORIZONTAL;
+	if (!IsNorthSolid(map, x, y) && !IsEastSolid(map, x, y) && !IsSouthSolid(map, x, y) && !IsWestSolid(map, x, y)) return ONE_BY_ONE;
+	if (IsNorthSolid(map, x, y) && IsEastSolid(map, x, y) && IsSouthSolid(map, x, y) && IsWestSolid(map, x, y)) 
+	{
+		if (!IsSouthEastSolid(map, x, y)) return SOUTH_EAST_BEND;
+		if (!IsSouthWestSolid(map, x, y)) return SOUTH_WEST_BEND;
+		if (!IsNorthEastSolid(map, x, y)) return NORTH_EAST_BEND;
+		if (!IsNorthWestSolid(map, x, y)) return NORTH_WEST_BEND;
+		
+		if ((x * 3 + y * 5) % 19 == 0) return INTERIOR_2;
+		if ((x * 5 + y * 3) % 17 == 0) return INTERIOR_3;
+	}
+	
+	return INTERIOR_1;
+}
+
+bool IsNorthSolid(Bitmap map, int x, int y) 
+{
+	return IsSolid(map, x, y - 1);
+}
+
+bool IsSouthSolid(Bitmap map, int x, int y) 
+{
+	return IsSolid(map, x, y + 1);
+}
+
+bool IsWestSolid(Bitmap map, int x, int y)
+{
+	return IsSolid(map, x - 1, y);
+}
+
+bool IsEastSolid(Bitmap map, int x, int y)
+{
+	return IsSolid(map, x + 1, y);
+}
+
+bool IsSouthEastSolid(Bitmap map, int x, int y) 
+{
+	return IsSolid(map, x + 1, y + 1);
+}
+
+bool IsSouthWestSolid(Bitmap map, int x, int y) 
+{
+	return IsSolid(map, x - 1, y + 1);
+}
+
+bool IsNorthEastSolid(Bitmap map, int x, int y) 
+{
+	return IsSolid(map, x + 1, y - 1);
+}
+
+bool IsNorthWestSolid(Bitmap map, int x, int y) 
+{
+	return IsSolid(map, x - 1, y - 1);
+}
+
+bool IsSolid(Bitmap map, int x, int y) 
+{
 	if (x < 0) x += map.Width;
 	if (x >= map.Width) x -= map.Width;
 	if (y < 0 || y >= map.Height) return true;

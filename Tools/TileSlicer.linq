@@ -5,7 +5,7 @@
 void Main()
 {
 	Bitmap destination = (Bitmap)Image.FromFile(Path.Combine(Path.GetDirectoryName(Util.CurrentQueryPath), "..\\Assets\\tiles-blank.png"), true);
-	Bitmap source = (Bitmap)Image.FromFile(Path.Combine(Path.GetDirectoryName(Util.CurrentQueryPath), "..\\Assets\\rocks2.png"), true);
+	Bitmap source = (Bitmap)Image.FromFile(Path.Combine(Path.GetDirectoryName(Util.CurrentQueryPath), "..\\Assets\\rocks3.png"), true);
 	
 	int index = 272 / 8;
 	// Main 3x3 tiles
@@ -90,7 +90,7 @@ void Main()
 		index++;
 	}
 	
-	destination.Save(Path.Combine(Path.GetDirectoryName(Util.CurrentQueryPath), "..\\Assets\\tiles.png"));
+	destination.Save(Path.Combine(Path.GetDirectoryName(Util.CurrentQueryPath), "..\\Assets\\tiles3.png"));
 }
 
 

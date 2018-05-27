@@ -2,8 +2,6 @@
   <Namespace>System.Drawing</Namespace>
 </Query>
 
-
-
 void Main()
 {
 	Bitmap map = (Bitmap)Image.FromFile(Path.Combine(Path.GetDirectoryName(Util.CurrentQueryPath), "..\\Assets\\level2.png"), true);
@@ -22,13 +20,25 @@ void Main()
 				tmp += ", ";
 			}
 			
+			ForegroundSolid = false;
 			if (!IsSolid(map, x, y)) {
 				tmp += "0, 0";
 			}
 			else {
-				int tile = GetTile(map, x, y);
-				
-				tmp += (START_INDEX + tile * 4) + ", " + (START_INDEX + tile * 4 + 1);
+				ForegroundSolid = true;
+				if (IsSolid(map, x, y)) 
+				{
+					int tile = GetTile(map, x, y);
+					
+					tmp += (START_INDEX + tile * 4) + ", " + (START_INDEX + tile * 4 + 1);
+				}
+				else 
+				{
+					ForegroundSolid = false;
+					int tile = GetTile(map, x, y);
+					
+					tmp += (BG_START_INDEX + tile * 4) + ", " + (BG_START_INDEX + tile * 4 + 1);
+				}
 			}
 		}
 		result += "{" + tmp + "},\n";
@@ -41,13 +51,25 @@ void Main()
 				tmp += ", ";
 			}
 			
+			ForegroundSolid = false;
 			if (!IsSolid(map, x, y)) {
 				tmp += "0, 0";
 			}
 			else {
-				int tile = GetTile(map, x, y);
-				
-				tmp += (START_INDEX + tile * 4 + 2) + ", " + (START_INDEX + tile * 4 + 3);
+				ForegroundSolid = true;
+				if (IsSolid(map, x, y)) 
+				{
+					int tile = GetTile(map, x, y);
+					
+					tmp += (START_INDEX + tile * 4 + 2) + ", " + (START_INDEX + tile * 4 + 3);
+				}
+				else 
+				{
+					ForegroundSolid = false;
+					int tile = GetTile(map, x, y);
+					
+					tmp += (BG_START_INDEX + tile * 4 + 2) + ", " + (BG_START_INDEX + tile * 4 + 3);
+				}
 			}
 		
 		}
@@ -59,6 +81,7 @@ void Main()
 }
 
 static int START_INDEX = 35;
+static int BG_START_INDEX = 123;
 
 static int INTERIOR_1 = 4;
 static int INTERIOR_2 = 20;
@@ -155,13 +178,15 @@ bool IsNorthWestSolid(Bitmap map, int x, int y)
 	return IsSolid(map, x - 1, y - 1);
 }
 
+bool ForegroundSolid = true;
+
 bool IsSolid(Bitmap map, int x, int y) 
 {
 	if (x < 0) x += map.Width;
 	if (x >= map.Width) x -= map.Width;
 	if (y < 0 || y >= map.Height) return true;
 	
-	return map.GetPixel(x, y).R == 0;
+	return ForegroundSolid ? map.GetPixel(x, y).R == 0 : map.GetPixel(x, y).B == 0;
 }
 
 int ColorToRgb565(Color color) 

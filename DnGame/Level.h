@@ -1,7 +1,7 @@
 #pragma once
 
-#define LEVEL_ROWS 160
-#define LEVEL_COLS 128 
+#define LEVEL_ROWS 80
+#define LEVEL_COLS 64 
 
 class Level {
   int levelIndex = -1;

@@ -87,10 +87,11 @@ const uint8_t Level::tiles[80][64] = {
 };
 
 bool Level::collisionAt(int x, int y, int width, int height) {
-  if (tileAt(x, y + height - 1)) return true;
-  if (tileAt(x + width - 1, y + height - 1)) return true;
-  if (tileAt(x + width - 1, y)) return true;
-  if (tileAt(x, y)) return true;
+  // TODO handle width > 16
+  for (int yTest = y; yTest < y + height - 1; yTest += 16) {
+    if (tileAt(x, yTest) || tileAt(x + width - 1, yTest)) return true;
+  }
+  if (tileAt(x, y + height - 1) || tileAt(x + width - 1, y + height - 1)) return true;
 
   return false;
 }

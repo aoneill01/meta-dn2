@@ -15,6 +15,7 @@ class TiledDisplay {
   void waitForPreviousDraw();
   bool drawPending = false;
   int characterX, characterY;
+  int animationOffset;
   uint16_t buffer1[W * 8];
   uint16_t buffer2[W * 8];
   const static uint8_t layer1[LAYER_HEIGHT][LAYER_WIDTH];
@@ -26,6 +27,7 @@ public:
   void draw();
   void setOffset(int offsetX, int offsetY);
   void setCharacterPosition(int characterX, int characterY) { this->characterX = characterX, this->characterY = characterY; }
+  void setCharacterFrame(int frame);
 
   int offsetX, offsetY;
 };

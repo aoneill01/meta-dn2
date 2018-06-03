@@ -97,12 +97,20 @@ void Player::internalUpdate(Level &level, bool firstUpdate) {
   touchingGround = level.collisionAt(x >> PRECISION, ((y  + 1) >> PRECISION), getWidth(), getHeight());
   if (touchingGround) {
     velY = 0;
+    if (gb.buttons.repeat(Button::right, 0) || gb.buttons.repeat(Button::left, 0)) {
+      this->animationFrame = 4 + ((gb.frameCount / 4) % 8);
+    }
+    else {
+      this->animationFrame = ((gb.frameCount / 4) % 4);
+    }
   }
   else {
     if (touchingRightWall || touchingLeftWall) {
+      this->animationFrame = 4;
     }
     else {
+      this->animationFrame = 5;
     }
   }
+  if (facingLeft) this->animationFrame += 12;
 }
-

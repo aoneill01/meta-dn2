@@ -10,6 +10,7 @@ class Player {
 
   void internalUpdate(Level &l, bool firstUpdate);
 public:
+  int animationFrame;
   void resetPosition(Level &l);
   int getX(); 
   int getY(); 

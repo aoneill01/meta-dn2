@@ -51,14 +51,15 @@ void Player::internalUpdate(Level &level, bool firstUpdate) {
       wallJumpDelay = 20;
       if (touchingRightWall) {
         velX = velocityInPixelsPerFrame(-3);
+        facingLeft = true;
       }
       else {
         velX = velocityInPixelsPerFrame(3);
+        facingLeft = false;
       }
     }
   }
-    
-  touchingRightWall = touchingLeftWall = false;
+  
   x += velX;
   if (level.collisionAt(x >> PRECISION, y >> PRECISION, getWidth(), getHeight())) {
     wallJumpDelay = 0;
@@ -67,13 +68,16 @@ void Player::internalUpdate(Level &level, bool firstUpdate) {
       return;
     }
     int backOne = velX > 0 ? velocityInPixelsPerFrame(-1) : velocityInPixelsPerFrame(1);
-    touchingRightWall = gb.buttons.repeat(Button::right, 0) && firstUpdate && !touchingGround;
-    touchingLeftWall = gb.buttons.repeat(Button::left, 0) && firstUpdate && !touchingGround;
+    
     do {
       x += backOne;
     } 
     while(level.collisionAt(x >> PRECISION, y >> PRECISION, getWidth(), getHeight()));
   }
+
+  touchingGround = level.collisionAt(x >> PRECISION, ((y  + 1) >> PRECISION), getWidth(), getHeight());
+  touchingRightWall = !touchingGround && velY > 0 && gb.buttons.repeat(Button::right, 0) && level.collisionAt((x + velocityInPixelsPerFrame(1)) >> PRECISION, y >> PRECISION, getWidth(), getHeight());
+  touchingLeftWall = !touchingGround && velY > 0 && gb.buttons.repeat(Button::left, 0) && level.collisionAt((x + velocityInPixelsPerFrame(-1)) >> PRECISION, y >> PRECISION, getWidth(), getHeight());
 
   velY += (touchingRightWall || touchingLeftWall) && velY > 0 ? GRAVITY >> 2 : GRAVITY;
   if (velY > 4 * ALMOST_ONE) velY = 4 * ALMOST_ONE;
@@ -94,7 +98,6 @@ void Player::internalUpdate(Level &level, bool firstUpdate) {
     while(level.collisionAt(x >> PRECISION, y >> PRECISION, getWidth(), getHeight()));
   }
 
-  touchingGround = level.collisionAt(x >> PRECISION, ((y  + 1) >> PRECISION), getWidth(), getHeight());
   if (touchingGround) {
     velY = 0;
     if (gb.buttons.repeat(Button::right, 0) || gb.buttons.repeat(Button::left, 0)) {
@@ -106,11 +109,12 @@ void Player::internalUpdate(Level &level, bool firstUpdate) {
   }
   else {
     if (touchingRightWall || touchingLeftWall) {
-      this->animationFrame = 4;
+      this->animationFrame = 12;
     }
     else {
       this->animationFrame = 5;
     }
   }
-  if (facingLeft) this->animationFrame += 12;
+  
+  if (facingLeft) this->animationFrame += 13;
 }

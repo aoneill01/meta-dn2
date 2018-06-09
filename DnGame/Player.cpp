@@ -22,10 +22,28 @@ int Player::getY() {
 
 void Player::update(Level &level) {
   internalUpdate(level, true);
-  internalUpdate(level, false);
+  PlayerState newState = internalUpdate(level, false);
+
+  sameStateCount++;
+  if (newState != state) sameStateCount = 0;
+  state = newState;
+  switch (state) {
+    case PlayerState::Run:
+      animationFrame = 4 + (((sameStateCount / 4) + 1) % 8);
+      break;
+    case PlayerState::Idle:
+      animationFrame = 0 + ((sameStateCount / 4) % 4);
+      break;
+    case PlayerState::Jump:
+      animationFrame = 14 + ((sameStateCount / 4) % 2);
+      break;
+    case PlayerState::Wall:
+      animationFrame = sameStateCount < 4 ? 13 : 12;
+      break;
+  }
 }
 
-void Player::internalUpdate(Level &level, bool firstUpdate) {
+PlayerState Player::internalUpdate(Level &level, bool firstUpdate) {
   if (wallJumpDelay) {
     wallJumpDelay--;
   }
@@ -35,11 +53,11 @@ void Player::internalUpdate(Level &level, bool firstUpdate) {
   
   if (gb.buttons.repeat(Button::right, 0) && !wallJumpDelay) {
     facingLeft = false;
-    velX = velocityInPixelsPerFrame(2);
+    velX = velocityInPixelsPerFrame(3);
   }
   if (gb.buttons.repeat(Button::left, 0) && !wallJumpDelay) {
     facingLeft = true;
-    velX = velocityInPixelsPerFrame(-2);
+    velX = velocityInPixelsPerFrame(-3);
   }
 
   if (gb.buttons.pressed(Button::a)) {
@@ -50,11 +68,11 @@ void Player::internalUpdate(Level &level, bool firstUpdate) {
       velY = velocityInPixelsPerFrame(-6);
       wallJumpDelay = 20;
       if (touchingRightWall) {
-        velX = velocityInPixelsPerFrame(-3);
+        velX = velocityInPixelsPerFrame(-4);
         facingLeft = true;
       }
       else {
-        velX = velocityInPixelsPerFrame(3);
+        velX = velocityInPixelsPerFrame(4);
         facingLeft = false;
       }
     }
@@ -63,10 +81,7 @@ void Player::internalUpdate(Level &level, bool firstUpdate) {
   x += velX;
   if (level.collisionAt(x >> PRECISION, y >> PRECISION, getWidth(), getHeight())) {
     wallJumpDelay = 0;
-    if (level.lavaAt(x >> PRECISION, y >> PRECISION, getWidth(), getHeight())) {
-      resetPosition(level);
-      return;
-    }
+
     int backOne = velX > 0 ? velocityInPixelsPerFrame(-1) : velocityInPixelsPerFrame(1);
     
     do {
@@ -85,10 +100,7 @@ void Player::internalUpdate(Level &level, bool firstUpdate) {
   y += velY;
   if (level.collisionAt(x >> PRECISION, y >> PRECISION, getWidth(), getHeight())) {
     wallJumpDelay = 0;
-    if (level.lavaAt(x >> PRECISION, y >> PRECISION, getWidth(), getHeight())) {
-      resetPosition(level);
-      return;
-    }
+
     int backOne = velY > 0 ? velocityInPixelsPerFrame(-1) : velocityInPixelsPerFrame(1);
     velY = 0;
     y = y | ALMOST_ONE;
@@ -101,20 +113,22 @@ void Player::internalUpdate(Level &level, bool firstUpdate) {
   if (touchingGround) {
     velY = 0;
     if (gb.buttons.repeat(Button::right, 0) || gb.buttons.repeat(Button::left, 0)) {
-      this->animationFrame = 4 + ((gb.frameCount / 4) % 8);
+      return PlayerState::Run;
+      //animationFrame = 4 + ((gb.frameCount / 4) % 8);
     }
     else {
-      this->animationFrame = ((gb.frameCount / 4) % 4);
+      return PlayerState::Idle;
+      //animationFrame = ((gb.frameCount / 4) % 4);
     }
   }
   else {
     if (touchingRightWall || touchingLeftWall) {
-      this->animationFrame = 12;
+      return PlayerState::Wall;
+      //animationFrame = 12;
     }
     else {
-      this->animationFrame = 5;
+      return PlayerState::Jump;
+      //animationFrame = 14 + ((gb.frameCount / 4) % 2);
     }
   }
-  
-  if (facingLeft) this->animationFrame += 13;
 }

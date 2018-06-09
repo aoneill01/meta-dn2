@@ -5,21 +5,21 @@
 void Main()
 {
 	Bitmap character = (Bitmap)Image.FromFile(Path.Combine(Path.GetDirectoryName(Util.CurrentQueryPath), "..\\Assets\\character.png"), true);
-	
+	/*
 	Bitmap destination = new Bitmap(character.Width, character.Height * 2);
 	CopyRegionIntoImage(character, new Rectangle(0, 0, character.Width, character.Height), ref destination, new Rectangle(0, 0, character.Width, character.Height));
 	character.RotateFlip(RotateFlipType.RotateNoneFlipX);
 	CopyRegionIntoImage(character, new Rectangle(0, 0, character.Width, character.Height), ref destination, new Rectangle(0, character.Height, character.Width, character.Height));
 	
 	destination.Dump();
-	
+	*/
 	string result = "";
 	
-	for (int y = 0; y < destination.Height; y++)
+	for (int y = 0; y < character.Height; y++)
 	{
-		for (int x = 0; x < destination.Width; x ++) 
+		for (int x = 0; x < character.Width; x ++) 
 		{
-			string hex = ToZeroPaddedHex4(SwapEndian16(ColorToRgb565(destination.GetPixel(x, y))));
+			string hex = ToZeroPaddedHex4(SwapEndian16(ColorToRgb565(character.GetPixel(x, y))));
 			
 			if (!string.IsNullOrEmpty(result)) 
 			{

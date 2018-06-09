@@ -3,25 +3,26 @@
 
 // TODO Fix magic numbers
 const int goalCharacterX = (160 - 20) / 2 + 3;
-const int goalCharacterY = (128 - 28) / 2 + 4;
+const int goalCharacterY = (128 - 28) / 2 + 2;
 
 void Game::reset() {
-  this->player.resetPosition(this->level);
+  player.resetPosition(level);
 }
 void Game::handleTick() {
-  this->player.update(this->level);
+  player.update(level);
 
   int offsetX = player.getX() - goalCharacterX;
   int offsetY = player.getY() - goalCharacterY;
 
-  this->tiledDisplay.setOffset(offsetX, offsetY);
+  tiledDisplay.setOffset(offsetX, offsetY);
   
-  int characterX = player.getX() - this->tiledDisplay.offsetX - 3;
-  int characterY = player.getY() - this->tiledDisplay.offsetY - 4;
+  int characterX = player.getX() - tiledDisplay.offsetX - 3;
+  int characterY = player.getY() - tiledDisplay.offsetY - 2;
 
-  this->tiledDisplay.setCharacterPosition(characterX, characterY);
-  this->tiledDisplay.setCharacterFrame(this->player.animationFrame);
+  tiledDisplay.setCharacterPosition(characterX, characterY);
+  tiledDisplay.setCharacterFrame(player.animationFrame);
+  tiledDisplay.characterFlipped = player.facingLeft;
 
-  this->tiledDisplay.draw();
+  tiledDisplay.draw();
 }
 

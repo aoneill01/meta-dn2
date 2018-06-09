@@ -30,4 +30,5 @@ public:
   void setCharacterFrame(int frame);
 
   int offsetX, offsetY;
+  bool characterFlipped = false;
 };

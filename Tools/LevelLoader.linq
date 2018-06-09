@@ -10,10 +10,24 @@ void Main()
 	map.Dump();
 	bg.Dump();
 	
-	GetCode(map, true, false).Dump();
+	WriteCode(map, true, false, Path.Combine(Path.GetDirectoryName(Util.CurrentQueryPath), "..\\binaries\\DnGame\\level1.map"));
 	GetCode(map, true, true).Dump();
 	
 	GetCode(bg, false, false).Dump();
+}
+
+public void WriteCode(Bitmap map, bool isMainMap, bool isHitMap, string filename) 
+{
+	using (var fs = new FileStream(filename, FileMode.Create, FileAccess.Write)) 
+	{
+		for (int y = 0; y < map.Height; y++)
+		{
+			for (int x = 0; x < map.Width; x ++) 
+			{
+				fs.WriteByte((byte)GetTile(map, x, y, isMainMap, isHitMap));
+			}
+		}
+	}
 }
 
 public string GetCode(Bitmap map, bool isMainMap, bool isHitMap) 
@@ -339,4 +353,3 @@ bool IsNorthWestSolid(Bitmap map, int x, int y, IsSolidDelegate IsSolid)
 {
 	return IsSolid(map, x - 1, y - 1);
 }
-

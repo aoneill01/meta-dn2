@@ -2,14 +2,19 @@
 
 #include "Level.h"
 
+enum class PlayerState { Idle, Run, Wall, Jump };
+
 class Player {
   int x, y;
   int velX, velY;
   int wallJumpDelay;
-  bool touchingGround, facingLeft, touchingRightWall, touchingLeftWall;
+  PlayerState state;
+  int sameStateCount;
+  bool touchingGround, touchingRightWall, touchingLeftWall;
 
-  void internalUpdate(Level &l, bool firstUpdate);
+  PlayerState internalUpdate(Level &l, bool firstUpdate);
 public:
+  bool facingLeft;
   int animationFrame;
   void resetPosition(Level &l);
   int getX(); 

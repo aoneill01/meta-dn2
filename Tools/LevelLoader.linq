@@ -10,7 +10,8 @@ void Main()
 	map.Dump();
 	bg.Dump();
 	
-	WriteCode(map, true, false, Path.Combine(Path.GetDirectoryName(Util.CurrentQueryPath), "..\\binaries\\DnGame\\level1.map"));
+	// WriteCode(map, true, false, Path.Combine(Path.GetDirectoryName(Util.CurrentQueryPath), "..\\binaries\\DnGame\\level1.map"));
+	GetCode(map, true, false).Dump();
 	GetCode(map, true, true).Dump();
 	
 	GetCode(bg, false, false).Dump();
@@ -44,7 +45,7 @@ public string GetCode(Bitmap map, bool isMainMap, bool isHitMap)
 				tmp += ", ";
 			}
 			
-			tmp += GetTile(map, x, y, isMainMap, isHitMap);
+			tmp += ("" + GetTile(map, x, y, isMainMap, isHitMap)).PadLeft(3);
 		}
 		result += "{" + tmp + "},\n";	
 	}

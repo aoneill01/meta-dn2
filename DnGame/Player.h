@@ -2,7 +2,7 @@
 
 #include "Level.h"
 
-enum class PlayerState { Idle, Run, Wall, Jump };
+enum class PlayerState { Idle, Run, Wall, Jump, Fall };
 
 class Player {
   int x, y;

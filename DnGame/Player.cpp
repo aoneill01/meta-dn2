@@ -37,6 +37,9 @@ void Player::update(Level &level) {
     case PlayerState::Jump:
       animationFrame = 14 + ((sameStateCount / 4) % 2);
       break;
+    case PlayerState::Fall:
+      animationFrame = 16 + ((sameStateCount / 4) % 2);
+      break;
     case PlayerState::Wall:
       animationFrame = sameStateCount < 4 ? 13 : 12;
       break;
@@ -127,7 +130,7 @@ PlayerState Player::internalUpdate(Level &level, bool firstUpdate) {
       //animationFrame = 12;
     }
     else {
-      return PlayerState::Jump;
+      return velY > velocityInPixelsPerFrame(1) ? PlayerState::Fall : PlayerState::Jump;
       //animationFrame = 14 + ((gb.frameCount / 4) % 2);
     }
   }

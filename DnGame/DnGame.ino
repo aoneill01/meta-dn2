@@ -1,5 +1,4 @@
 #include <Gamebuino-Meta.h>
-#include <utility/Adafruit_ZeroDMA.h>
 #include "Game.h"
 
 Game game;
@@ -21,5 +20,3 @@ void loop() {
 
   if (gb.frameCount % 25 == 0) SerialUSB.printf("CPU: %i\n", gb.getCpuLoad());
 }
-
-

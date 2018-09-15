@@ -10,6 +10,7 @@
 void Player::resetPosition(Level &l) {
   x = (10 * 8) << PRECISION;
   y = (10 * 8) << PRECISION;
+  velX = velY = 0;
 }
 
 int Player::getX() {
@@ -20,9 +21,17 @@ int Player::getY() {
   return y >> PRECISION;
 }
 
+bool Player::isDead() {
+  return state == PlayerState::Dead;
+}
+
 void Player::update(Level &level) {
-  internalUpdate(level, true);
-  PlayerState newState = internalUpdate(level, false);
+  // Two internal updates per drawn frame
+  PlayerState newState = internalUpdate(level, true);
+  
+  if (newState != PlayerState::Dead) {
+    newState = internalUpdate(level, false);
+  }
 
   sameStateCount++;
   if (newState != state) sameStateCount = 0;
@@ -47,6 +56,8 @@ void Player::update(Level &level) {
 }
 
 PlayerState Player::internalUpdate(Level &level, bool firstUpdate) {
+  bool dead = false;
+  
   if (wallJumpDelay) {
     wallJumpDelay--;
   }
@@ -91,6 +102,10 @@ PlayerState Player::internalUpdate(Level &level, bool firstUpdate) {
       x += backOne;
     } 
     while(level.collisionAt(x >> PRECISION, y >> PRECISION, getWidth(), getHeight()));
+
+    if (level.damageAt((x - backOne) >> PRECISION, y >> PRECISION, getWidth(), getHeight())) {
+      dead = true;
+    }
   }
 
   touchingGround = level.collisionAt(x >> PRECISION, ((y  + 1) >> PRECISION), getWidth(), getHeight());
@@ -111,27 +126,28 @@ PlayerState Player::internalUpdate(Level &level, bool firstUpdate) {
       y += backOne;
     }
     while(level.collisionAt(x >> PRECISION, y >> PRECISION, getWidth(), getHeight()));
+
+    if (level.damageAt(x >> PRECISION, (y - backOne) >> PRECISION, getWidth(), getHeight())) {
+      dead = true;
+    }
   }
 
+  if (dead) return PlayerState::Dead;
   if (touchingGround) {
     velY = 0;
     if (gb.buttons.repeat(Button::right, 0) || gb.buttons.repeat(Button::left, 0)) {
       return PlayerState::Run;
-      //animationFrame = 4 + ((gb.frameCount / 4) % 8);
     }
     else {
       return PlayerState::Idle;
-      //animationFrame = ((gb.frameCount / 4) % 4);
     }
   }
   else {
     if (touchingRightWall || touchingLeftWall) {
       return PlayerState::Wall;
-      //animationFrame = 12;
     }
     else {
       return velY > velocityInPixelsPerFrame(1) ? PlayerState::Fall : PlayerState::Jump;
-      //animationFrame = 14 + ((gb.frameCount / 4) % 2);
     }
   }
 }

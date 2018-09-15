@@ -11,6 +11,11 @@ void Game::reset() {
 void Game::handleTick() {
   player.update(level);
 
+  if (player.isDead()) {
+    reset();
+    return;
+  }
+
   int offsetX = player.getX() - goalCharacterX;
   int offsetY = player.getY() - goalCharacterY;
 
@@ -25,4 +30,3 @@ void Game::handleTick() {
 
   tiledDisplay.draw();
 }
-

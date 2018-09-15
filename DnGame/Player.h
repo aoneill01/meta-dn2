@@ -2,7 +2,7 @@
 
 #include "Level.h"
 
-enum class PlayerState { Idle, Run, Wall, Jump, Fall };
+enum class PlayerState { Idle, Run, Wall, Jump, Fall, Dead };
 
 class Player {
   int x, y;
@@ -20,8 +20,8 @@ public:
   int getX(); 
   int getY(); 
   void update(Level &l);
+  bool isDead();
   
   int getWidth() { return 14; }
   int getHeight() { return 23; }
 };
-

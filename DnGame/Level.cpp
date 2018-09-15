@@ -15,13 +15,13 @@ bool Level::collisionAt(int x, int y, int width, int height) {
   return false;
 }
 
-bool Level::lavaAt(int x, int y, int width, int height) {
-  /*
-  if (tileAt(x + width / 2, y) == 2) return true;
-  if (tileAt(x + width / 2, y + height - 1) == 2) return true;
-  if (tileAt(x, y + height / 2) == 2) return true;
-  if (tileAt(x + width - 1, y + height / 2) == 2) return true;
-  */
+bool Level::damageAt(int x, int y, int width, int height) {
+  // TODO handle width > 16
+  for (int yTest = y; yTest < y + height - 1; yTest += 16) {
+    if (tileAt(x, yTest) == 2 || tileAt(x + width - 1, yTest) == 2) return true;
+  }
+  if (tileAt(x, y + height - 1) == 2 || tileAt(x + width - 1, y + height - 1) == 2) return true;
+  
   return false;
 }
 
@@ -32,6 +32,11 @@ byte Level::tileAt(int x, int y) {
   // Solid outside of map
   if (gridX < 0 || gridX >= LEVEL_COLS || gridY < 0 || gridY >= LEVEL_ROWS) return 1;
 
-  return tiles[gridY][gridX];
+  int value = tiles[gridY][gridX];
+  if (value == 2) {
+    // Damage tiles have a 1 pixel buffer of empty space
+    if ((x % TILE_SIZE) == 0 || (x % TILE_SIZE) == TILE_SIZE - 1 ||
+      (y % TILE_SIZE) == 0 || (y % TILE_SIZE) == TILE_SIZE - 1) return 0;
+  }
+  return value;
 }
-

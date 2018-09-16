@@ -1,24 +1,21 @@
 #include <Gamebuino-Meta.h>
 #include "Player.h"
 
-#define PRECISION 6
-#define GRAVITY 0x8
-#define ALMOST_ONE 0b111111
-
-#define velocityInPixelsPerFrame(val) (val << PRECISION >> 1)
+const SQ15x16 _gravity = 0.125;
+const SQ15x16 _almostOne = .999;
 
 void Player::resetPosition(Level &l) {
-  x = (10 * 8) << PRECISION;
-  y = (10 * 8) << PRECISION;
+  x = 10 * 8;
+  y = 10 * 8;
   velX = velY = 0;
 }
 
 int Player::getX() {
-  return x >> PRECISION;
+  return x.getInteger();
 }
 
 int Player::getY() {
-  return y >> PRECISION;
+  return y.getInteger();
 }
 
 bool Player::isDead() {
@@ -64,74 +61,78 @@ PlayerState Player::internalUpdate(Level &level, bool firstUpdate) {
   else {
     velX = 0;
   }
-  
+
+  // Handle button presses
   if (gb.buttons.repeat(Button::right, 0) && !wallJumpDelay) {
     facingLeft = false;
-    velX = velocityInPixelsPerFrame(3);
+    velX = 1.5;
   }
   if (gb.buttons.repeat(Button::left, 0) && !wallJumpDelay) {
     facingLeft = true;
-    velX = velocityInPixelsPerFrame(-3);
+    velX = -1.5;
   }
 
   if (gb.buttons.pressed(Button::a)) {
     if (touchingGround) {
-      velY = velocityInPixelsPerFrame(-10);
+      velY = -10;
     }
     else if (touchingRightWall || touchingLeftWall) {
-      velY = velocityInPixelsPerFrame(-6);
+      velY = -6;
       wallJumpDelay = 20;
       if (touchingRightWall) {
-        velX = velocityInPixelsPerFrame(-4);
+        velX = -2;
         facingLeft = true;
       }
       else {
-        velX = velocityInPixelsPerFrame(4);
+        velX = 2;
         facingLeft = false;
       }
     }
   }
-  
+
+  // Handle horizontal movement
   x += velX;
-  if (level.collisionAt(x >> PRECISION, y >> PRECISION, getWidth(), getHeight())) {
+  if (level.collisionAt(getX(), getY(), getWidth(), getHeight())) {
     wallJumpDelay = 0;
 
-    int backOne = velX > 0 ? velocityInPixelsPerFrame(-1) : velocityInPixelsPerFrame(1);
+    int backOne = velX > 0 ? -1 : 1;
     
     do {
       x += backOne;
     } 
-    while(level.collisionAt(x >> PRECISION, y >> PRECISION, getWidth(), getHeight()));
+    while(level.collisionAt(getX(), getY(), getWidth(), getHeight()));
 
-    if (level.damageAt((x - backOne) >> PRECISION, y >> PRECISION, getWidth(), getHeight())) {
+    if (level.damageAt(getX() - backOne, getY(), getWidth(), getHeight())) {
       dead = true;
     }
   }
 
-  touchingGround = level.collisionAt(x >> PRECISION, ((y  + 1) >> PRECISION), getWidth(), getHeight());
-  touchingRightWall = !touchingGround && velY > 0 && gb.buttons.repeat(Button::right, 0) && level.collisionAt((x + velocityInPixelsPerFrame(1)) >> PRECISION, y >> PRECISION, getWidth(), getHeight());
-  touchingLeftWall = !touchingGround && velY > 0 && gb.buttons.repeat(Button::left, 0) && level.collisionAt((x + velocityInPixelsPerFrame(-1)) >> PRECISION, y >> PRECISION, getWidth(), getHeight());
+  touchingGround = level.collisionAt(getX(), getY() + 1, getWidth(), getHeight());
+  touchingRightWall = !touchingGround && velY > 0 && gb.buttons.repeat(Button::right, 0) && level.collisionAt(getX() + 1, getY(), getWidth(), getHeight());
+  touchingLeftWall = !touchingGround && velY > 0 && gb.buttons.repeat(Button::left, 0) && level.collisionAt(getX() - 1, getY(), getWidth(), getHeight());
 
-  velY += (touchingRightWall || touchingLeftWall) && velY > 0 ? GRAVITY >> 2 : GRAVITY;
-  if (velY > 4 * ALMOST_ONE) velY = 4 * ALMOST_ONE;
-  if (velY < 4 * -ALMOST_ONE) velY = 4 * -ALMOST_ONE;
+  // Handle vertical movement
+  velY += (touchingRightWall || touchingLeftWall) && velY > 0 ? _gravity / 4 : _gravity;
+  if (velY > 4 * _almostOne) velY = 4 * _almostOne;
+  if (velY < 4 * -_almostOne) velY = 4 * -_almostOne;
   y += velY;
-  if (level.collisionAt(x >> PRECISION, y >> PRECISION, getWidth(), getHeight())) {
+  if (level.collisionAt(getX(), getY(), getWidth(), getHeight())) {
     wallJumpDelay = 0;
 
-    int backOne = velY > 0 ? velocityInPixelsPerFrame(-1) : velocityInPixelsPerFrame(1);
+    int backOne = velY > 0 ? -1 : 1;
     velY = 0;
-    y = y | ALMOST_ONE;
+    y = y.getInteger() + _almostOne;
     do {
       y += backOne;
     }
-    while(level.collisionAt(x >> PRECISION, y >> PRECISION, getWidth(), getHeight()));
+    while(level.collisionAt(getX(), getY(), getWidth(), getHeight()));
 
-    if (level.damageAt(x >> PRECISION, (y - backOne) >> PRECISION, getWidth(), getHeight())) {
+    if (level.damageAt(getX(), getY() - backOne, getWidth(), getHeight())) {
       dead = true;
     }
   }
 
+  // Return the current player state based on the update
   if (dead) return PlayerState::Dead;
   if (touchingGround) {
     velY = 0;
@@ -147,7 +148,7 @@ PlayerState Player::internalUpdate(Level &level, bool firstUpdate) {
       return PlayerState::Wall;
     }
     else {
-      return velY > velocityInPixelsPerFrame(1) ? PlayerState::Fall : PlayerState::Jump;
+      return velY > 1 ? PlayerState::Fall : PlayerState::Jump;
     }
   }
 }

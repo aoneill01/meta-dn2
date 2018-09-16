@@ -12,6 +12,21 @@ void Game::handleTick() {
   player.update(level);
 
   if (player.isDead()) {
+    for (int j = 0; j < 4; j++) {
+      tiledDisplay.pixelMask = 0b0000000011111000;
+      for (int i = 0; i < 6; i++) {
+        tiledDisplay.draw();
+        while (!gb.update());
+      }
+
+      tiledDisplay.pixelMask = 0b0000000001111000;
+      for (int i = 0; i < 6; i++) {
+        tiledDisplay.draw();
+        while (!gb.update());
+      }
+    }
+
+    tiledDisplay.pixelMask = 0xffff;
     reset();
     return;
   }

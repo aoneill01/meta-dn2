@@ -31,4 +31,5 @@ public:
 
   int offsetX, offsetY;
   bool characterFlipped = false;
+  uint16_t pixelMask = 0xffff;
 };

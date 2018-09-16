@@ -276,6 +276,8 @@ void TiledDisplay::draw() {
     waitForPreviousDraw();
     customDrawBuffer(0, sliceY, buffer, W, SLICE_HEIGHT);
   }
+  
+  waitForPreviousDraw();
 }
 
 void TiledDisplay::setCharacterFrame(int frame) 
@@ -290,6 +292,11 @@ inline void TiledDisplay::drawTileRow(uint16_t *buffer, const int bufferOffset, 
 }
 
 void TiledDisplay::customDrawBuffer(int16_t x, int16_t y, uint16_t *buffer, uint16_t w, uint16_t h) {
+  if (pixelMask != 0xffff) {
+    for (int i = 0; i < w * h; i++) {
+      buffer[i] = pixelMask & buffer[i];
+    }
+  }
   this->drawPending = true;
   gb.tft.setAddrWindow(x, y, x + w - 1, y + h - 1);
   SPI.beginTransaction(Gamebuino_Meta::tftSPISettings);

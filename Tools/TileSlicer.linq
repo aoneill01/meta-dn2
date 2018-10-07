@@ -9,7 +9,7 @@ void Main()
 	
 	int index = 0;
 	
-	for (int y = 0; y < 16; y++) 
+	for (int y = 0; y < 8; y++) 
 	{
 		for (int x = 0; x < 16; x++) {
 			CopyRegionIntoImage(source, new Rectangle(x * 16, y * 16, 8, 8), ref destination, new Rectangle(0, index * 8, 8, 8));
@@ -63,7 +63,7 @@ void GetCode()
 		}
 	}
 	
-	result = "const uint16_t sample_tilesData[] = { " + result + " };";
+	result = "const uint16_t TiledDisplay::sample_tilesData[] = { " + result + " };";
 	result.Dump();
 }
 

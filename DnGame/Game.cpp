@@ -9,7 +9,8 @@ void Game::reset() {
   player.resetPosition(level);
 }
 void Game::handleTick() {
-  player.update(level);
+  player.update(level, breakableBlocks);
+  breakableBlocks.handleTick(level);
 
   if (player.isDead()) {
     for (int j = 0; j < 4; j++) {

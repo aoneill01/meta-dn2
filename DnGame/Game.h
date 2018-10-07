@@ -8,6 +8,7 @@ class Game {
   Level level;
   Player player;
   TiledDisplay tiledDisplay;
+  BreakableBlocks breakableBlocks;
   
 public: 
   void reset();

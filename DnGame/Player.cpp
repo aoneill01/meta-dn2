@@ -1,5 +1,7 @@
 #include <Gamebuino-Meta.h>
 #include "Player.h"
+#include "TileSet.h"
+#include "BreakableBlocks.h"
 
 const SQ15x16 _gravity = 0.125;
 const SQ15x16 _almostOne = .999;
@@ -22,12 +24,12 @@ bool Player::isDead() {
   return state == PlayerState::Dead;
 }
 
-void Player::update(Level &level) {
+void Player::update(Level &level, BreakableBlocks &breakableBlocks) {
   // Two internal updates per drawn frame
-  PlayerState newState = internalUpdate(level, true);
+  PlayerState newState = internalUpdate(level, breakableBlocks, true);
   
   if (newState != PlayerState::Dead) {
-    newState = internalUpdate(level, false);
+    newState = internalUpdate(level, breakableBlocks, false);
   }
 
   sameStateCount++;
@@ -52,8 +54,9 @@ void Player::update(Level &level) {
   }
 }
 
-PlayerState Player::internalUpdate(Level &level, bool firstUpdate) {
+PlayerState Player::internalUpdate(Level &level, BreakableBlocks &breakableBlocks, bool firstUpdate) {
   bool dead = false;
+  TileSet collidedTiles;
   
   if (wallJumpDelay) {
     wallJumpDelay--;
@@ -92,7 +95,7 @@ PlayerState Player::internalUpdate(Level &level, bool firstUpdate) {
 
   // Handle horizontal movement
   x += velX;
-  if (level.collisionAt(getX(), getY(), getWidth(), getHeight())) {
+  if (level.collisionsAt(getX(), getY(), getWidth(), getHeight(), collidedTiles)) {
     wallJumpDelay = 0;
 
     int backOne = velX > 0 ? -1 : 1;
@@ -100,23 +103,19 @@ PlayerState Player::internalUpdate(Level &level, bool firstUpdate) {
     do {
       x += backOne;
     } 
-    while(level.collisionAt(getX(), getY(), getWidth(), getHeight()));
+    while(level.collisionsAt(getX(), getY(), getWidth(), getHeight(), collidedTiles));
 
-    if (level.damageAt(getX() - backOne, getY(), getWidth(), getHeight())) {
+    if (level.collisionsAt(getX() - backOne, getY(), getWidth(), getHeight(), collidedTiles) && collidedTiles.containsTile(2)) {
       dead = true;
     }
   }
-
-  touchingGround = level.collisionAt(getX(), getY() + 1, getWidth(), getHeight());
-  touchingRightWall = !touchingGround && velY > 0 && gb.buttons.repeat(Button::right, 0) && level.collisionAt(getX() + 1, getY(), getWidth(), getHeight());
-  touchingLeftWall = !touchingGround && velY > 0 && gb.buttons.repeat(Button::left, 0) && level.collisionAt(getX() - 1, getY(), getWidth(), getHeight());
 
   // Handle vertical movement
   velY += (touchingRightWall || touchingLeftWall) && velY > 0 ? _gravity / 4 : _gravity;
   if (velY > 4 * _almostOne) velY = 4 * _almostOne;
   if (velY < 4 * -_almostOne) velY = 4 * -_almostOne;
   y += velY;
-  if (level.collisionAt(getX(), getY(), getWidth(), getHeight())) {
+  if (level.collisionsAt(getX(), getY(), getWidth(), getHeight(), collidedTiles)) {
     wallJumpDelay = 0;
 
     int backOne = velY > 0 ? -1 : 1;
@@ -125,12 +124,22 @@ PlayerState Player::internalUpdate(Level &level, bool firstUpdate) {
     do {
       y += backOne;
     }
-    while(level.collisionAt(getX(), getY(), getWidth(), getHeight()));
+    while(level.collisionsAt(getX(), getY(), getWidth(), getHeight(), collidedTiles));
 
-    if (level.damageAt(getX(), getY() - backOne, getWidth(), getHeight())) {
+    if (level.collisionsAt(getX(), getY() - backOne, getWidth(), getHeight(), collidedTiles) && collidedTiles.containsTile(2)) {
       dead = true;
     }
   }
+
+  touchingGround = level.collisionsAt(getX(), getY() + 1, getWidth(), getHeight(), collidedTiles);
+  for (int i = 0; i < collidedTiles.getCount(); i++) {
+    TileInfo ti = collidedTiles.getTileInfo(i);
+    if (ti.tile == 3) {
+      breakableBlocks.triggerBlockAt(ti.x, ti.y);
+    }
+  }
+  touchingRightWall = !touchingGround && velY > 0 && gb.buttons.repeat(Button::right, 0) && level.collisionsAt(getX() + 1, getY(), getWidth(), getHeight(), collidedTiles);
+  touchingLeftWall = !touchingGround && velY > 0 && gb.buttons.repeat(Button::left, 0) && level.collisionsAt(getX() - 1, getY(), getWidth(), getHeight(), collidedTiles);
 
   // Return the current player state based on the update
   if (dead) return PlayerState::Dead;

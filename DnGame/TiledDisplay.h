@@ -17,8 +17,7 @@ class TiledDisplay {
   int characterX, characterY;
   int animationOffset;
   uint16_t buffer1[W * 8];
-  uint16_t buffer2[W * 8];
-  const static uint8_t layer1[LAYER_HEIGHT][LAYER_WIDTH];
+  uint16_t buffer2[W * 8];  
   const static uint8_t layer2[44][37]; // TODO Fix magic values
   const static uint16_t sample_tilesData[];
   const static uint16_t characterData[];
@@ -32,4 +31,5 @@ public:
   int offsetX, offsetY;
   bool characterFlipped = false;
   uint16_t pixelMask = 0xffff;
+  static uint8_t layer1[LAYER_HEIGHT][LAYER_WIDTH];
 };

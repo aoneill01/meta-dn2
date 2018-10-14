@@ -1,9 +1,9 @@
 #include <Gamebuino-Meta.h>
-#include "BreakableBlocks.h"
+#include "BreakableTiles.h"
 #include "TiledDisplay.h"
 
-bool BreakableBlocks::triggerBlockAt(int x, int y) {
-    if (count >= BREAKABLE_BLOCKS_MAX_COUNT) {
+bool BreakableTiles::triggerBlockAt(int x, int y) {
+    if (count >= BREAKABLE_TILES_MAX_COUNT) {
         return false;
     }
 
@@ -20,11 +20,11 @@ bool BreakableBlocks::triggerBlockAt(int x, int y) {
     return true;
 }
 
-void BreakableBlocks::clear() {
+void BreakableTiles::clear() {
     count = 0;
 }
 
-void BreakableBlocks::handleTick(Level& level) {
+void BreakableTiles::handleTick(Level& level) {
     for (int i = 0; i < count; i++) {
         tiles[i].countdown--;
         if (tiles[i].countdown == 0) {

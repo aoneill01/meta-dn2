@@ -3,14 +3,18 @@
 #include "Player.h"
 #include "Level.h"
 #include "TiledDisplay.h"
+#include "BreakableTiles.h"
+#include "DisappearingTiles.h"
 
 class Game {
   Level level;
   Player player;
   TiledDisplay tiledDisplay;
-  BreakableBlocks breakableBlocks;
+  BreakableTiles breakableTiles;
+  DisappearingTiles disappearingTiles;
   
 public: 
-  void reset();
+  void loadLevel();
+  void reset();  
   void handleTick();
 };

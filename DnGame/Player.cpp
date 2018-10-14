@@ -1,14 +1,14 @@
 #include <Gamebuino-Meta.h>
 #include "Player.h"
 #include "TileSet.h"
-#include "BreakableBlocks.h"
+#include "BreakableTiles.h"
 
 const SQ15x16 _gravity = 0.125;
 const SQ15x16 _almostOne = .999;
 
 void Player::resetPosition(Level &l) {
-  x = 10 * 8;
-  y = 10 * 8;
+  x = 31 * 16 + 8;
+  y = 0;
   velX = velY = 0;
 }
 
@@ -24,12 +24,12 @@ bool Player::isDead() {
   return state == PlayerState::Dead;
 }
 
-void Player::update(Level &level, BreakableBlocks &breakableBlocks) {
+void Player::handleTick(Level &level, BreakableTiles &breakableTiles) {
   // Two internal updates per drawn frame
-  PlayerState newState = internalUpdate(level, breakableBlocks, true);
+  PlayerState newState = internalUpdate(level, breakableTiles, true);
   
   if (newState != PlayerState::Dead) {
-    newState = internalUpdate(level, breakableBlocks, false);
+    newState = internalUpdate(level, breakableTiles, false);
   }
 
   sameStateCount++;
@@ -54,7 +54,7 @@ void Player::update(Level &level, BreakableBlocks &breakableBlocks) {
   }
 }
 
-PlayerState Player::internalUpdate(Level &level, BreakableBlocks &breakableBlocks, bool firstUpdate) {
+PlayerState Player::internalUpdate(Level &level, BreakableTiles &breakableTiles, bool firstUpdate) {
   bool dead = false;
   TileSet collidedTiles;
   
@@ -135,7 +135,7 @@ PlayerState Player::internalUpdate(Level &level, BreakableBlocks &breakableBlock
   for (int i = 0; i < collidedTiles.getCount(); i++) {
     TileInfo ti = collidedTiles.getTileInfo(i);
     if (ti.tile == 3) {
-      breakableBlocks.triggerBlockAt(ti.x, ti.y);
+      breakableTiles.triggerBlockAt(ti.x, ti.y);
     }
   }
   touchingRightWall = !touchingGround && velY > 0 && gb.buttons.repeat(Button::right, 0) && level.collisionsAt(getX() + 1, getY(), getWidth(), getHeight(), collidedTiles);

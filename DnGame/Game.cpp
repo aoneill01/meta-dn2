@@ -5,12 +5,19 @@
 const int goalCharacterX = (160 - 20) / 2 + 3;
 const int goalCharacterY = (128 - 28) / 2 + 2;
 
+void Game::loadLevel() {
+  disappearingTiles.loadLevel();
+  reset();
+}
+
 void Game::reset() {
   player.resetPosition(level);
 }
+
 void Game::handleTick() {
-  player.update(level, breakableBlocks);
-  breakableBlocks.handleTick(level);
+  player.handleTick(level, breakableTiles);
+  breakableTiles.handleTick(level);
+  disappearingTiles.handleTick();
 
   if (player.isDead()) {
     for (int j = 0; j < 4; j++) {

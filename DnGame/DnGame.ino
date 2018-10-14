@@ -10,7 +10,7 @@ void setup() {
   
   SerialUSB.begin(9600);
 
-  game.reset();
+  game.loadLevel();
 }
 
 void loop() {

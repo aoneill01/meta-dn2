@@ -3,7 +3,7 @@
 #include <FixedPoints.h>
 #include <FixedPointsCommon.h>
 #include "Level.h"
-#include "BreakableBlocks.h"
+#include "BreakableTiles.h"
 
 enum class PlayerState { Idle, Run, Wall, Jump, Fall, Dead };
 
@@ -15,14 +15,14 @@ class Player {
   int sameStateCount;
   bool touchingGround, touchingRightWall, touchingLeftWall;
 
-  PlayerState internalUpdate(Level &l, BreakableBlocks &breakableBlocks, bool firstUpdate);
+  PlayerState internalUpdate(Level &l, BreakableTiles &breakableTiles, bool firstUpdate);
 public:
   bool facingLeft;
   int animationFrame;
   void resetPosition(Level &l);
   int getX(); 
   int getY(); 
-  void update(Level &l, BreakableBlocks &breakableBlocks);
+  void handleTick(Level &l, BreakableTiles &breakableTiles);
   bool isDead();
   
   int getWidth() { return 14; }

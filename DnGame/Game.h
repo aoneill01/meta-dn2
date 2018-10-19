@@ -7,13 +7,14 @@
 #include "DisappearingTiles.h"
 
 class Game {
-  Level level;
   Player player;
   TiledDisplay tiledDisplay;
+  Level level;
   BreakableTiles breakableTiles;
   DisappearingTiles disappearingTiles;
   
-public: 
+public:
+  Game() : level(&tiledDisplay), disappearingTiles(&level) {}
   void loadLevel();
   void reset();  
   void handleTick();

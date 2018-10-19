@@ -50,7 +50,7 @@ public string GetCode(Bitmap map, bool isMainMap, bool isHitMap)
 		result += "{" + tmp + "},\n";	
 	}
 	
-	result = "const uint8_t layer1[LAYER_HEIGHT][LAYER_WIDTH] = {\n" + result + "};";
+	result = "const uint8_t foregroundLayer[FOREGROUND_HEIGHT][FOREGROUND_WIDTH] = {\n" + result + "};";
 	
 	return result;
 }

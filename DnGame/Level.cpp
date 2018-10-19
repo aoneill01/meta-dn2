@@ -1,6 +1,5 @@
 #include <Gamebuino-Meta.h>
 #include "Level.h"
-#include "TiledDisplay.h"
 
 #define TILE_SIZE 16
 
@@ -14,6 +13,10 @@ const uint8_t Level::typeMap[] = {
   4, 3, 3, 1, 2, 1, 1, 1, 5, 5, 4, 4, 5, 5, 5, 5, 
   5, 3, 3, 2, 2, 2, 1, 1, 5, 5, 4, 4, 4, 4, 4, 4
 };
+
+Level::Level(TiledDisplay *tiledDisplay) {
+  this->tiledDisplay = tiledDisplay;
+}
 
 bool Level::collisionsAt(int x, int y, int width, int height, TileSet& result) {
   byte tile;
@@ -42,7 +45,7 @@ byte Level::tileAt(int x, int y) {
   // Solid outside of map
   if (gridX < 0 || gridX >= LEVEL_COLS || gridY < 0 || gridY >= LEVEL_ROWS) return 1;
 
-  uint8_t value = typeMap[TiledDisplay::layer1[gridY][gridX]];
+  uint8_t value = typeMap[tiledDisplay->foregroundLayer[FOREGROUND_WIDTH * gridY + gridX]];
   if (value == 2) {
     // Damage tiles have a 1 pixel buffer of empty space
     if ((x % TILE_SIZE) == 0 || (x % TILE_SIZE) == TILE_SIZE - 1 ||
@@ -51,7 +54,10 @@ byte Level::tileAt(int x, int y) {
   return value;
 }
 
-void Level::clearTile(int x, int y) {
-  // TODO Find a better way to do this:
-  TiledDisplay::layer1[y][x] = 21;
+void Level::setTile(int x, int y, uint8_t tile) {
+  tiledDisplay->foregroundLayer[FOREGROUND_WIDTH * y + x] = tile;
+}
+
+uint8_t Level::getTile(int x, int y) {
+  return tiledDisplay->foregroundLayer[FOREGROUND_WIDTH * y + x];
 }

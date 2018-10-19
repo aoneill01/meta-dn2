@@ -1,16 +1,17 @@
 #include "DisappearingTiles.h"
-#include "TiledDisplay.h"
-#include "Level.h"
+
+DisappearingTiles::DisappearingTiles(Level *level) {
+    this->level = level;
+}
 
 void DisappearingTiles::loadLevel() {
     count = 0;
     tickCount = 0;
 
-    // TODO Remove magic numbers
-    for (int x = 0; x < 64; x++) {
-        for (int y = 0; y < 80; y++) {
+    for (int x = 0; x < LEVEL_COLS; x++) {
+        for (int y = 0; y < LEVEL_ROWS; y++) {
             // TODO Refactor
-            uint8_t originalTile = TiledDisplay::layer1[y][x];
+            uint8_t originalTile = level->getTile(x, y);
             if (Level::typeMap[originalTile] == 4 || Level::typeMap[originalTile] == 5) {
                 tiles[count].x = x;
                 tiles[count].y = y;
@@ -27,22 +28,22 @@ void DisappearingTiles::handleTick() {
     if (tickCount % 64 == 0) {
         for (int i = 0; i < count; i++) {
             if (Level::typeMap[tiles[i].originalTile] == 4) {
-                TiledDisplay::layer1[tiles[i].y][tiles[i].x] = 21;
+                level->setTile(tiles[i].x, tiles[i].y, 21);
             }
             // Must be 5
             else {
-                TiledDisplay::layer1[tiles[i].y][tiles[i].x] = tiles[i].originalTile;
+                level->setTile(tiles[i].x, tiles[i].y, tiles[i].originalTile);
             }
         }
     }
     else if (tickCount % 64 == 32) {
         for (int i = 0; i < count; i++) {
             if (Level::typeMap[tiles[i].originalTile] == 4) {
-                TiledDisplay::layer1[tiles[i].y][tiles[i].x] = tiles[i].originalTile;
+                level->setTile(tiles[i].x, tiles[i].y, tiles[i].originalTile);
             }
             // Must be 5
             else {
-                TiledDisplay::layer1[tiles[i].y][tiles[i].x] = 21;
+                level->setTile(tiles[i].x, tiles[i].y, 21);
             }
         }
     }

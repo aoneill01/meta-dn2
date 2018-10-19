@@ -3,6 +3,7 @@
 #include "Level.h"
 
 #define BREAKABLE_TILES_MAX_COUNT 16
+#define BREAKABLE_TILES_COUNTDOWN 30
 
 struct BreakableTileInfo {
     int x, y;

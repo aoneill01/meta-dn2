@@ -12,6 +12,11 @@
 #define BACKGROUND_WIDTH 37
 #define BACKGROUND_HEIGHT 44
 
+#define EMPTY_TILE 21
+#define BREAK1_TILE 98
+#define BREAK2_TILE 113
+#define BREAK3_TILE 114
+
 class TiledDisplay {
   inline void drawTileRow(uint16_t *buffer, const int bufferOffset, const int tileOffset, const int yOffsetRemainder, const int xOffsetRemainder, const int y, const int x) __attribute__((always_inline));
   void customDrawBuffer(int16_t x, int16_t y, uint16_t *buffer, uint16_t w, uint16_t h);

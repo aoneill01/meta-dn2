@@ -1,12 +1,11 @@
 #include <Gamebuino-Meta.h>
 #include "Game.h"
 
-// TODO Fix magic numbers
-const int goalCharacterX = (160 - 20) / 2 + 3;
-const int goalCharacterY = (128 - 28) / 2 + 2;
+const int goalCharacterX = (SCREEN_WIDTH - 20) / 2 + 3;
+const int goalCharacterY = (SCREEN_HEIGHT - 28) / 2 + 2;
 
 void Game::loadLevel() {
-  disappearingTiles.loadLevel();
+  disappearingTiles.loadLevel(level);
   reset();
 }
 
@@ -17,7 +16,7 @@ void Game::reset() {
 void Game::handleTick() {
   player.handleTick(level, breakableTiles);
   breakableTiles.handleTick(level);
-  disappearingTiles.handleTick();
+  disappearingTiles.handleTick(level);
 
   if (player.isDead()) {
     for (int j = 0; j < 4; j++) {

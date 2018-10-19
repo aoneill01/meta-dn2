@@ -2,8 +2,12 @@
 #include "TiledDisplay.h"
 #include "TileSet.h"
 
-#define LEVEL_ROWS 80
-#define LEVEL_COLS 64 
+#define PROP_EMPTY 0
+#define PROP_SOLID 1
+#define PROP_DEATH 2
+#define PROP_BREAK 3
+#define PROP_DISA1 4
+#define PROP_DISA2 5
 
 class Level {
   TiledDisplay *tiledDisplay;

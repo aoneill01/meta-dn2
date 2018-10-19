@@ -105,7 +105,7 @@ PlayerState Player::internalUpdate(Level &level, BreakableTiles &breakableTiles,
     } 
     while(level.collisionsAt(getX(), getY(), getWidth(), getHeight(), collidedTiles));
 
-    if (level.collisionsAt(getX() - backOne, getY(), getWidth(), getHeight(), collidedTiles) && collidedTiles.containsTile(2)) {
+    if (level.collisionsAt(getX() - backOne, getY(), getWidth(), getHeight(), collidedTiles) && collidedTiles.containsTile(PROP_DEATH)) {
       dead = true;
     }
   }
@@ -126,7 +126,7 @@ PlayerState Player::internalUpdate(Level &level, BreakableTiles &breakableTiles,
     }
     while(level.collisionsAt(getX(), getY(), getWidth(), getHeight(), collidedTiles));
 
-    if (level.collisionsAt(getX(), getY() - backOne, getWidth(), getHeight(), collidedTiles) && collidedTiles.containsTile(2)) {
+    if (level.collisionsAt(getX(), getY() - backOne, getWidth(), getHeight(), collidedTiles) && collidedTiles.containsTile(PROP_DEATH)) {
       dead = true;
     }
   }
@@ -134,7 +134,7 @@ PlayerState Player::internalUpdate(Level &level, BreakableTiles &breakableTiles,
   touchingGround = level.collisionsAt(getX(), getY() + 1, getWidth(), getHeight(), collidedTiles);
   for (int i = 0; i < collidedTiles.getCount(); i++) {
     TileInfo ti = collidedTiles.getTileInfo(i);
-    if (ti.tile == 3) {
+    if (ti.propety == PROP_BREAK) {
       breakableTiles.triggerBlockAt(ti.x, ti.y);
     }
   }

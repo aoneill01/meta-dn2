@@ -14,7 +14,7 @@ class Game {
   DisappearingTiles disappearingTiles;
   
 public:
-  Game() : level(&tiledDisplay), disappearingTiles(&level) {}
+  Game() : level(&tiledDisplay) {}
   void loadLevel();
   void reset();  
   void handleTick();

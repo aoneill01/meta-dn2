@@ -1,7 +1,7 @@
 #include <Gamebuino-Meta.h>
 #include "TileSet.h"
 
-bool TileSet::add(int x, int y, byte tile) {
+bool TileSet::add(int x, int y, byte propety) {
     if (count >= TILE_SET_MAX_COUNT) {
         return false;
     }
@@ -12,7 +12,7 @@ bool TileSet::add(int x, int y, byte tile) {
 
     tiles[count].x = x;
     tiles[count].y = y;
-    tiles[count].tile = tile;
+    tiles[count].propety = propety;
 
     count++;
 
@@ -27,9 +27,9 @@ bool TileSet::isEmpty() {
     return count == 0;
 }
 
-bool TileSet::containsTile(byte tile) {
+bool TileSet::containsTile(byte propety) {
     for (int i = 0; i < count; i++) {
-        if (tiles[i].tile == tile) return true;
+        if (tiles[i].propety == propety) return true;
     }
 
     return false;

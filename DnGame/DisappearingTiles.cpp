@@ -1,18 +1,13 @@
 #include "DisappearingTiles.h"
 
-DisappearingTiles::DisappearingTiles(Level *level) {
-    this->level = level;
-}
-
-void DisappearingTiles::loadLevel() {
+void DisappearingTiles::loadLevel(Level &level) {
     count = 0;
     tickCount = 0;
 
-    for (int x = 0; x < LEVEL_COLS; x++) {
-        for (int y = 0; y < LEVEL_ROWS; y++) {
-            // TODO Refactor
-            uint8_t originalTile = level->getTile(x, y);
-            if (Level::typeMap[originalTile] == 4 || Level::typeMap[originalTile] == 5) {
+    for (int x = 0; x < FOREGROUND_WIDTH; x++) {
+        for (int y = 0; y < FOREGROUND_HEIGHT; y++) {
+            uint8_t originalTile = level.getTile(x, y);
+            if (Level::typeMap[originalTile] == PROP_DISA1 || Level::typeMap[originalTile] == PROP_DISA2) {
                 tiles[count].x = x;
                 tiles[count].y = y;
                 tiles[count].originalTile = originalTile;
@@ -24,26 +19,26 @@ void DisappearingTiles::loadLevel() {
     }
 }
 
-void DisappearingTiles::handleTick() {
-    if (tickCount % 64 == 0) {
+void DisappearingTiles::handleTick(Level &level) {
+    if (tickCount % TICK_COUNT_CYCLE == 0) {
         for (int i = 0; i < count; i++) {
-            if (Level::typeMap[tiles[i].originalTile] == 4) {
-                level->setTile(tiles[i].x, tiles[i].y, 21);
+            if (Level::typeMap[tiles[i].originalTile] == PROP_DISA1) {
+                level.setTile(tiles[i].x, tiles[i].y, EMPTY_TILE);
             }
-            // Must be 5
+            // Must be PROP_DISA1
             else {
-                level->setTile(tiles[i].x, tiles[i].y, tiles[i].originalTile);
+                level.setTile(tiles[i].x, tiles[i].y, tiles[i].originalTile);
             }
         }
     }
-    else if (tickCount % 64 == 32) {
+    else if (tickCount % TICK_COUNT_CYCLE == TICK_COUNT_CYCLE / 2) {
         for (int i = 0; i < count; i++) {
-            if (Level::typeMap[tiles[i].originalTile] == 4) {
-                level->setTile(tiles[i].x, tiles[i].y, tiles[i].originalTile);
+            if (Level::typeMap[tiles[i].originalTile] == PROP_DISA1) {
+                level.setTile(tiles[i].x, tiles[i].y, tiles[i].originalTile);
             }
-            // Must be 5
+            // Must be PROP_DISA1
             else {
-                level->setTile(tiles[i].x, tiles[i].y, 21);
+                level.setTile(tiles[i].x, tiles[i].y, EMPTY_TILE);
             }
         }
     }

@@ -43,7 +43,9 @@ byte Level::tileAt(int x, int y) {
   int gridY = y / TILE_SIZE;
 
   // Solid outside of map
-  if (gridX < 0 || gridX >= FOREGROUND_WIDTH || gridY < 0 || gridY >= FOREGROUND_HEIGHT) return 1;
+  if (gridX < 0 || gridX >= FOREGROUND_WIDTH) return PROP_SOLID;
+  if (gridY < 0) return PROP_UP;
+  if (gridY >= FOREGROUND_HEIGHT) return PROP_DOWN;
 
   uint8_t value = typeMap[tiledDisplay->foregroundLayer[FOREGROUND_WIDTH * gridY + gridX]];
   if (value == 2) {
@@ -60,4 +62,16 @@ void Level::setTile(int x, int y, uint8_t tile) {
 
 uint8_t Level::getTile(int x, int y) {
   return tiledDisplay->foregroundLayer[FOREGROUND_WIDTH * y + x];
+}
+
+void Level::loadLevel(int levelNumber) {
+  char filename[256];
+  snprintf(filename, sizeof filename, "levels/%d.dnl", levelNumber);
+  File levelFile = SD.open(filename, FILE_READ);
+
+  for (int y = 0; y < FOREGROUND_HEIGHT; y++) {
+    for (int x = 0; x < FOREGROUND_WIDTH; x++) {
+      setTile(x, y, levelFile.read());
+    }
+  }
 }

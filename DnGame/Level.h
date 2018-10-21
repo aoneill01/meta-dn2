@@ -8,6 +8,8 @@
 #define PROP_BREAK 3
 #define PROP_DISA1 4
 #define PROP_DISA2 5
+#define PROP_UP 6
+#define PROP_DOWN 7
 
 class Level {
   TiledDisplay *tiledDisplay;
@@ -22,4 +24,5 @@ public:
   bool collisionsAt(int x, int y, int width, int height, TileSet& result);
   void setTile(int x, int y, uint8_t tile);
   uint8_t getTile(int x, int y);
+  void loadLevel(int levelNumber);
 };

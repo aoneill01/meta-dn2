@@ -17,7 +17,7 @@ class Player {
 
   PlayerState internalUpdate(Level &l, BreakableTiles &breakableTiles, bool firstUpdate);
 public:
-  bool facingLeft;
+  bool facingLeft, nextLevel;
   int animationFrame;
   void resetPosition(Level &l);
   int getX(); 

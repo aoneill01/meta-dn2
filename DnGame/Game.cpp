@@ -5,6 +5,7 @@ const int goalCharacterX = (SCREEN_WIDTH - 20) / 2 + 3;
 const int goalCharacterY = (SCREEN_HEIGHT - 28) / 2 + 2;
 
 void Game::loadLevel() {
+  level.loadLevel(levelNumber);
   disappearingTiles.loadLevel(level);
   reset();
 }
@@ -14,6 +15,12 @@ void Game::reset() {
 }
 
 void Game::handleTick() {
+  if (player.nextLevel) {
+    levelNumber++;
+    if (levelNumber == 4) levelNumber = 1;
+    loadLevel();
+  }
+
   player.handleTick(level, breakableTiles);
   breakableTiles.handleTick(level);
   disappearingTiles.handleTick(level);

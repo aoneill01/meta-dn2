@@ -12,6 +12,7 @@ class Game {
   Level level;
   BreakableTiles breakableTiles;
   DisappearingTiles disappearingTiles;
+  int levelNumber = 1;
   
 public:
   Game() : level(&tiledDisplay) {}

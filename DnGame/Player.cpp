@@ -138,6 +138,7 @@ PlayerState Player::internalUpdate(Level &level, BreakableTiles &breakableTiles,
       breakableTiles.triggerBlockAt(ti.x, ti.y);
     }
   }
+  nextLevel = collidedTiles.containsTile(PROP_DOWN);
   touchingRightWall = !touchingGround && velY > 0 && gb.buttons.repeat(Button::right, 0) && level.collisionsAt(getX() + 1, getY(), getWidth(), getHeight(), collidedTiles);
   touchingLeftWall = !touchingGround && velY > 0 && gb.buttons.repeat(Button::left, 0) && level.collisionsAt(getX() - 1, getY(), getWidth(), getHeight(), collidedTiles);
 

@@ -289,10 +289,10 @@ void TiledDisplay::draw() {
           for (int x = sprites[i].x; x < sprites[i].x + sprites[i].width; x++) {
             int value;
             if (sprites[i].flipped) {
-              value = sprites[i].data[(sliceY - sprites[i].y + y) * sprites[i].width + sprites[i].width - (x - sprites[i].x) - 1 + animationOffset];
+              value = sprites[i].data[(sliceY - sprites[i].y + y) * sprites[i].width + sprites[i].width - (x - sprites[i].x) - 1];
             }
             else {
-              value = sprites[i].data[(sliceY - sprites[i].y + y) * sprites[i].width - sprites[i].x + x + animationOffset];
+              value = sprites[i].data[(sliceY - sprites[i].y + y) * sprites[i].width - sprites[i].x + x];
             }
             if (value != 0xE007) {
               buffer[x + y * SCREEN_WIDTH] = value;

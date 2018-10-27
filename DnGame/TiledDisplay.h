@@ -28,7 +28,6 @@ class TiledDisplay {
   void customDrawBuffer(int16_t x, int16_t y, uint16_t *buffer, uint16_t w, uint16_t h);
   void waitForPreviousDraw();
   bool drawPending = false;
-  int animationOffset;
   uint16_t buffer1[SCREEN_WIDTH * 8];
   uint16_t buffer2[SCREEN_WIDTH * 8];  
   const static uint8_t backgroundLayer[BACKGROUND_WIDTH * BACKGROUND_HEIGHT];

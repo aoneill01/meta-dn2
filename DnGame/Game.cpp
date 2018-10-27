@@ -42,6 +42,10 @@ void Game::handleTick() {
 
     tiledDisplay.pixelMask = 0xffff;
     reset();
+    deaths++;
+    tiledDisplay.sprites[4].data = (uint16_t*)&TiledDisplay::charsData + (deaths % 10) * 40;
+    tiledDisplay.sprites[3].data = (uint16_t*)&TiledDisplay::charsData + ((deaths / 10) % 10) * 40;
+    tiledDisplay.sprites[2].data = (uint16_t*)&TiledDisplay::charsData + ((deaths / 100) % 10) * 40;
     return;
   }
 
@@ -55,7 +59,7 @@ void Game::handleTick() {
 
   tiledDisplay.setCharacterPosition(characterX, characterY);
   tiledDisplay.setCharacterFrame(player.animationFrame);
-  tiledDisplay.characterFlipped = player.facingLeft;
+  tiledDisplay.setCharacterFlipped(player.facingLeft);
 
   tiledDisplay.draw();
 }

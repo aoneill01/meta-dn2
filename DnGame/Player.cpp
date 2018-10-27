@@ -3,7 +3,15 @@
 #include "TileSet.h"
 #include "BreakableTiles.h"
 
-const SQ15x16 _gravity = 0.125;
+SQ15x16 _normalGravity = 0.18;
+SQ15x16 _jumpGravity = 0.09;
+SQ15x16 _jumpVel = -3.55;
+SQ15x16 _maxRunVel = 1.8;
+SQ15x16 _wallVelX = 1.8;
+SQ15x16 _wallVelY = -2.4;
+SQ15x16 _maxFallVelY = 4;
+SQ15x16 _runAcc = 0.13;
+SQ15x16 _runDec = 0.18;
 const SQ15x16 _almostOne = .999;
 
 void Player::resetPosition(Level &l) {
@@ -57,39 +65,81 @@ void Player::handleTick(Level &level, BreakableTiles &breakableTiles) {
 PlayerState Player::internalUpdate(Level &level, BreakableTiles &breakableTiles, bool firstUpdate) {
   bool dead = false;
   TileSet collidedTiles;
+  SQ15x16 gravity = _normalGravity;
   
   if (wallJumpDelay) {
     wallJumpDelay--;
   }
   else {
-    velX = 0;
+    // velX = 0;
   }
 
   // Handle button presses
-  if (gb.buttons.repeat(Button::right, 0) && !wallJumpDelay) {
-    facingLeft = false;
-    velX = 1.5;
-  }
-  if (gb.buttons.repeat(Button::left, 0) && !wallJumpDelay) {
-    facingLeft = true;
-    velX = -1.5;
+  if (!wallJumpDelay) {
+    if (gb.buttons.repeat(Button::right, 0)) {
+      facingLeft = false;
+      velX += _runAcc;
+      if (velX > _maxRunVel) velX = _maxRunVel;
+    }
+    else if (gb.buttons.repeat(Button::left, 0)) {
+      facingLeft = true;
+      velX -= _runAcc;
+      if (velX < -_maxRunVel) velX = -_maxRunVel;
+    }
+    else {
+      if (velX > 0) {
+        velX -= _runDec;
+        if (velX < 0) velX = 0;
+      }
+      else {
+        velX += _runDec;
+        if (velX > 0) velX = 0;
+      }
+    }
   }
 
   if (gb.buttons.pressed(Button::a)) {
     if (touchingGround) {
-      velY = -10;
+      velY = _jumpVel;
     }
     else if (touchingRightWall || touchingLeftWall) {
-      velY = -6;
+      velY = _wallVelY;
       wallJumpDelay = 20;
       if (touchingRightWall) {
-        velX = -2;
+        velX = -_wallVelX;
         facingLeft = true;
       }
       else {
-        velX = 2;
+        velX = _wallVelX;
         facingLeft = false;
       }
+    }
+    
+  }
+  if (gb.buttons.repeat(Button::a, 0)) {
+    if (velY < 0) gravity = _jumpGravity;
+  }
+
+  if (firstUpdate && gb.buttons.repeat(Button::b, 0)) {
+    if (gb.buttons.pressed(Button::up)) {
+      _runAcc *= 1.05;
+      SerialUSB.print("_runAcc: ");
+      SerialUSB.println(static_cast<float>(_runAcc));
+    }
+    if (gb.buttons.pressed(Button::down)) {
+      _runAcc *= 0.95;
+      SerialUSB.print("_runAcc: ");
+      SerialUSB.println(static_cast<float>(_runAcc));
+    }
+    if (gb.buttons.pressed(Button::right)) {
+      _runDec *= 1.05;
+      SerialUSB.print("_runDec: ");
+      SerialUSB.println(static_cast<float>(_runDec));
+    }
+    if (gb.buttons.pressed(Button::left)) {
+      _runDec *= 0.95;
+      SerialUSB.print("_runDec: ");
+      SerialUSB.println(static_cast<float>(_runDec));
     }
   }
 
@@ -111,8 +161,8 @@ PlayerState Player::internalUpdate(Level &level, BreakableTiles &breakableTiles,
   }
 
   // Handle vertical movement
-  velY += (touchingRightWall || touchingLeftWall) && velY > 0 ? _gravity / 4 : _gravity;
-  if (velY > 4 * _almostOne) velY = 4 * _almostOne;
+  velY += (touchingRightWall || touchingLeftWall) && velY > 0 ? gravity / 4 : gravity;
+  if (velY > _maxFallVelY) velY = _maxFallVelY;
   if (velY < 4 * -_almostOne) velY = 4 * -_almostOne;
   y += velY;
   if (level.collisionsAt(getX(), getY(), getWidth(), getHeight(), collidedTiles)) {

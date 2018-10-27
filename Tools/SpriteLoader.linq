@@ -2,7 +2,13 @@
   <Namespace>System.Drawing</Namespace>
 </Query>
 
-void Main()
+void Main() 
+{
+	//Character();
+	Chars();
+}
+
+void Character()
 {
 	Bitmap character = (Bitmap)Image.FromFile(Path.Combine(Path.GetDirectoryName(Util.CurrentQueryPath), "..\\Assets\\character.png"), true);
 	/*
@@ -31,6 +37,31 @@ void Main()
 	}
 	
 	result = "const uint16_t characterData[] = { " + result + " };";
+	result.Dump();
+}
+
+void Chars()
+{
+	Bitmap character = (Bitmap)Image.FromFile(Path.Combine(Path.GetDirectoryName(Util.CurrentQueryPath), "..\\Assets\\chars.png"), true);
+
+	string result = "";
+	
+	for (int y = 0; y < character.Height; y++)
+	{
+		for (int x = 0; x < character.Width; x ++) 
+		{
+			string hex = ToZeroPaddedHex4(SwapEndian16(ColorToRgb565(character.GetPixel(x, y))));
+			
+			if (!string.IsNullOrEmpty(result)) 
+			{
+				result += ", ";
+			}
+			
+			result += "0x" + hex;
+		}
+	}
+	
+	result = "const uint16_t charsData[] = { " + result + " };";
 	result.Dump();
 }
 

@@ -63,7 +63,7 @@ void GetCode()
 		}
 	}
 	
-	result = "const uint16_t TiledDisplay::sample_tilesData[] = { " + result + " };";
+	result = "const uint16_t tilesData[] = { " + result + " };";
 	result.Dump();
 }
 

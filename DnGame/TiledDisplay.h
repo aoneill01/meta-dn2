@@ -1,21 +1,6 @@
 #pragma once
 
-#define SCREEN_WIDTH 160
-#define SCREEN_HEIGHT 128
-
-#define TILE_SIZE 8
-#define SLICE_HEIGHT 8
-
-#define FOREGROUND_WIDTH 64
-#define FOREGROUND_HEIGHT 80
-
-#define BACKGROUND_WIDTH 37
-#define BACKGROUND_HEIGHT 44
-
-#define EMPTY_TILE 21
-#define BREAK1_TILE 98
-#define BREAK2_TILE 113
-#define BREAK3_TILE 114
+#include "Constants.h"
 
 struct Sprite {
     int x, y, width, height;
@@ -29,10 +14,7 @@ class TiledDisplay {
   void waitForPreviousDraw();
   bool drawPending = false;
   uint16_t buffer1[SCREEN_WIDTH * 8];
-  uint16_t buffer2[SCREEN_WIDTH * 8];  
-  const static uint8_t backgroundLayer[BACKGROUND_WIDTH * BACKGROUND_HEIGHT];
-  const static uint16_t sample_tilesData[];
-  const static uint16_t characterData[];
+  uint16_t buffer2[SCREEN_WIDTH * 8];
   
 public:
   TiledDisplay();
@@ -46,5 +28,4 @@ public:
   uint16_t pixelMask = 0xffff;
   Sprite sprites[8];
   static uint8_t foregroundLayer[FOREGROUND_HEIGHT * FOREGROUND_WIDTH];
-  const static uint16_t charsData[];
 };

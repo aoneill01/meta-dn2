@@ -1,5 +1,6 @@
 #include <Gamebuino-Meta.h>
 #include "Game.h"
+#include "GraphicsData.h"
 
 const int goalCharacterX = (SCREEN_WIDTH - 20) / 2 + 3;
 const int goalCharacterY = (SCREEN_HEIGHT - 28) / 2 + 2;
@@ -43,9 +44,9 @@ void Game::handleTick() {
     tiledDisplay.pixelMask = 0xffff;
     reset();
     deaths++;
-    tiledDisplay.sprites[4].data = (uint16_t*)&TiledDisplay::charsData + (deaths % 10) * 40;
-    tiledDisplay.sprites[3].data = (uint16_t*)&TiledDisplay::charsData + ((deaths / 10) % 10) * 40;
-    tiledDisplay.sprites[2].data = (uint16_t*)&TiledDisplay::charsData + ((deaths / 100) % 10) * 40;
+    tiledDisplay.sprites[4].data = (uint16_t*)&charsData + (deaths % 10) * 40;
+    tiledDisplay.sprites[3].data = (uint16_t*)&charsData + ((deaths / 10) % 10) * 40;
+    tiledDisplay.sprites[2].data = (uint16_t*)&charsData + ((deaths / 100) % 10) * 40;
     return;
   }
 

@@ -18,6 +18,5 @@ class Game {
 public:
   Game() : level(&tiledDisplay) {}
   void loadLevel();
-  void reset();  
   void handleTick();
 };

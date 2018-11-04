@@ -303,6 +303,16 @@ void TiledDisplay::customDrawBuffer(int16_t x, int16_t y, uint16_t *buffer, uint
   SPI.beginTransaction(Gamebuino_Meta::tftSPISettings);
   gb.tft.dataMode();
   gb.tft.sendBuffer(buffer, w*h);
+
+#ifdef SCREEN_RECORD
+  while (SerialUSB.read() == -1);
+  SerialUSB.print("start");
+  SerialUSB.write(x);
+  SerialUSB.write(y);
+  SerialUSB.write(w);
+  SerialUSB.write(h);
+  SerialUSB.write((const char*)buffer, 2*w*h);
+#endif
 }
 
 void TiledDisplay::waitForPreviousDraw() {

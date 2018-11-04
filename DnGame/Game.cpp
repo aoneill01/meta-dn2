@@ -8,11 +8,14 @@ const int goalCharacterY = (SCREEN_HEIGHT - 28) / 2 + 2;
 void Game::loadLevel() {
   level.loadLevel(levelNumber);
   disappearingTiles.loadLevel(level);
-  reset();
-}
-
-void Game::reset() {
   player.resetPosition(level);
+
+  tiledDisplay.sprites[4].data = (uint16_t*)&charsData + (deaths % 10) * 40;
+  tiledDisplay.sprites[3].data = (uint16_t*)&charsData + ((deaths / 10) % 10) * 40;
+  tiledDisplay.sprites[2].data = (uint16_t*)&charsData + ((deaths / 100) % 10) * 40;
+
+  tiledDisplay.sprites[7].data = (uint16_t*)&charsData + ((50 - levelNumber) % 10) * 40;
+  tiledDisplay.sprites[6].data = (uint16_t*)&charsData + (((50 - levelNumber) / 10) % 10) * 40;
 }
 
 void Game::handleTick() {
@@ -42,11 +45,10 @@ void Game::handleTick() {
     }
 
     tiledDisplay.pixelMask = 0xffff;
-    reset();
+    
     deaths++;
-    tiledDisplay.sprites[4].data = (uint16_t*)&charsData + (deaths % 10) * 40;
-    tiledDisplay.sprites[3].data = (uint16_t*)&charsData + ((deaths / 10) % 10) * 40;
-    tiledDisplay.sprites[2].data = (uint16_t*)&charsData + ((deaths / 100) % 10) * 40;
+    loadLevel();
+
     return;
   }
 

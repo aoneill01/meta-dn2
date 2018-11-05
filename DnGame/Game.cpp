@@ -64,5 +64,16 @@ void Game::handleTick() {
   tiledDisplay.setCharacterFrame(player.animationFrame);
   tiledDisplay.setCharacterFlipped(player.facingLeft);
 
+  int i = 0;
+  for (; i < breakableTiles.fragments.getCount(); i++) {
+    FragmentSprite sprite = breakableTiles.fragments.getSprite(i);
+    tiledDisplay.sprites[8 + i].x = sprite.getX() - tiledDisplay.offsetX;
+    tiledDisplay.sprites[8 + i].y = sprite.getY() - tiledDisplay.offsetY;
+  }
+  for (; i < 12; i++) {
+    tiledDisplay.sprites[8 + i].x = -5;
+    tiledDisplay.sprites[8 + i].x = -8;
+  }
+
   tiledDisplay.draw();
 }

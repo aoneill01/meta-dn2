@@ -26,6 +26,6 @@ public:
 
   int offsetX, offsetY;
   uint16_t pixelMask = 0xffff;
-  Sprite sprites[8];
+  Sprite sprites[20];
   static uint8_t foregroundLayer[FOREGROUND_HEIGHT * FOREGROUND_WIDTH];
 };

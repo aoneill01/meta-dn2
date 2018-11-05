@@ -23,3 +23,5 @@
 #define BREAK2_TILE 113
 // ID of third breaking tile
 #define BREAK3_TILE 114
+
+#define LEVEL_TILE_SIZE 16

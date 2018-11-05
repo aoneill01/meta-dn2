@@ -40,6 +40,11 @@ TiledDisplay::TiledDisplay() {
   sprites[7] = {
     1 + 2 * 6, SCREEN_HEIGHT - 9, 5, 8, (uint16_t*)&charsData + 9 * 40, false
   };
+  for (int i = 8; i < 8 + 12; i++) {
+    sprites[i] = {
+      -5, -8, 5, 8, (uint16_t*)&charsData + 13 * 40, false
+    };
+  }
 }
 
 const int characterWidth = 20;
@@ -257,13 +262,13 @@ void TiledDisplay::draw() {
 
     int sliceY = sliceIndex * SLICE_HEIGHT;
     
-    for (int i = 0; i < 8; i++) {
+    for (int i = 0; i < 20; i++) {
       if ((sliceY <= sprites[i].y + sprites[i].height) && (sliceY + SLICE_HEIGHT > sprites[i].y)) {
         int startIndex = (sprites[i].y <= sliceY) ? 0 : sprites[i].y - sliceY;
         int endIndex = sprites[i].y + sprites[i].height >= sliceY + SLICE_HEIGHT ? 7 : sprites[i].y + sprites[i].height - sliceY - 1;
         for (int y = startIndex; y <= endIndex; y++) {
           
-          for (int x = sprites[i].x; x < sprites[i].x + sprites[i].width; x++) {
+          for (int x = sprites[i].x < 0 ? 0 : sprites[i].x; x < sprites[i].x + sprites[i].width && x < SCREEN_WIDTH; x++) {
             int value;
             if (sprites[i].flipped) {
               value = sprites[i].data[(sliceY - sprites[i].y + y) * sprites[i].width + sprites[i].width - (x - sprites[i].x) - 1];

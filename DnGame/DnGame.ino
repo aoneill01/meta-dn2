@@ -1,5 +1,3 @@
-// #define SCREEN_RECORD true
-
 #include <Gamebuino-Meta.h>
 #include "Game.h"
 

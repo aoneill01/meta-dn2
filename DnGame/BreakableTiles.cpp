@@ -56,10 +56,43 @@ void BreakableTiles::handleTick(Level& level) {
 FragmentSprite::FragmentSprite(SQ15x16 x, SQ15x16 y) {
     this->x = x;
     this->y = y;
+    velX = ((SQ15x16)random(-16, 16)) / 16;
+    velY = 0;
 }
 
+SQ15x16 _gravity = 0.32;
+SQ15x16 _maxFragmentVelY = 8;
+
 bool FragmentSprite::handleTick(Level &level) {
+    TileSet collidedTiles;
     tickCountdown--;
+
+    x += velX;
+    if (level.collisionsAt(getX() + 1, getY() + 2, 3, 4, collidedTiles)) {
+        int backOne = velX > 0 ? -1 : 1;
+        
+        do {
+            x += backOne;
+        } 
+        while(level.collisionsAt(getX() + 1, getY() + 2, 3, 4, collidedTiles));
+
+        velX = -velX;
+    }
+
+    velY += _gravity;
+    if (velY > _maxFragmentVelY) velY = _maxFragmentVelY;
+    y += velY;
+    if (level.collisionsAt(getX() + 1, getY() + 2, 3, 4, collidedTiles)) {
+        int backOne = velY > 0 ? -1 : 1;
+        
+        do {
+            y += backOne;
+        }
+        while(level.collisionsAt(getX() + 1, getY() + 2, 3, 4, collidedTiles));
+
+        velY = -velY / 2;
+    }
+
     return tickCountdown == 0;
 }
 

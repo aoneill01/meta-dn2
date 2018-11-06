@@ -1,3 +1,5 @@
+// #define SCREEN_RECORD true
+
 #include <Gamebuino-Meta.h>
 #include "Game.h"
 #include "GraphicsData.h"
@@ -42,7 +44,7 @@ TiledDisplay::TiledDisplay() {
   };
   for (int i = 8; i < 8 + 12; i++) {
     sprites[i] = {
-      -5, -8, 5, 8, (uint16_t*)&charsData + 13 * 40, false
+      -5, -8, 5, 8, (uint16_t*)&charsData + 13 * 40, i % 2 == 0
     };
   }
 }

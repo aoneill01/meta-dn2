@@ -4,17 +4,19 @@
 
 struct TileInfo {
     int x, y;
-    byte propety;
+    byte property;
 };
 
 class TileSet {
     TileInfo tiles[TILE_SET_MAX_COUNT];
     int count = 0;
 public:
-    bool add(int x, int y, byte propety);
+    bool ignoreDisappearing = false;
+
+    bool add(int x, int y, byte property);
     void clear();
     bool isEmpty();
-    bool containsTile(byte propety);
+    bool containsTile(byte property);
     int getCount();
     TileInfo getTileInfo(int index);
 };

@@ -3,15 +3,15 @@
 #include "TileSet.h"
 #include "BreakableTiles.h"
 
-SQ15x16 _normalGravity = 0.18;
-SQ15x16 _jumpGravity = 0.09;
-SQ15x16 _jumpVel = -3.55;
-SQ15x16 _maxRunVel = 1.8;
-SQ15x16 _wallVelX = 1.8;
-SQ15x16 _wallVelY = -2.4;
-SQ15x16 _maxFallVelY = 4;
-SQ15x16 _runAcc = 0.13;
-SQ15x16 _runDec = 0.18;
+const SQ15x16 _normalGravity = 0.18;
+const SQ15x16 _jumpGravity = 0.09;
+const SQ15x16 _jumpVel = -3.55;
+const SQ15x16 _maxRunVel = 1.8;
+const SQ15x16 _wallVelX = 1.8;
+const SQ15x16 _wallVelY = -2.4;
+const SQ15x16 _maxFallVelY = 4;
+const SQ15x16 _runAcc = 0.13;
+const SQ15x16 _runDec = 0.18;
 const SQ15x16 _almostOne = .999;
 
 void Player::resetPosition(Level &l) {
@@ -66,6 +66,10 @@ PlayerState Player::internalUpdate(Level &level, BreakableTiles &breakableTiles,
   bool dead = false;
   TileSet collidedTiles;
   SQ15x16 gravity = _normalGravity;
+
+  collidedTiles.ignoreDisappearing = false;
+  level.collisionsAt(getX(), getY(), getWidth(), getHeight(), collidedTiles);
+  collidedTiles.ignoreDisappearing = collidedTiles.containsTile(PROP_DISA1) || collidedTiles.containsTile(PROP_DISA2);
   
   if (wallJumpDelay) {
     wallJumpDelay--;
@@ -120,29 +124,6 @@ PlayerState Player::internalUpdate(Level &level, BreakableTiles &breakableTiles,
     if (velY < 0) gravity = _jumpGravity;
   }
 
-  if (firstUpdate && gb.buttons.repeat(Button::b, 0)) {
-    if (gb.buttons.pressed(Button::up)) {
-      _runAcc *= 1.05;
-      SerialUSB.print("_runAcc: ");
-      SerialUSB.println(static_cast<float>(_runAcc));
-    }
-    if (gb.buttons.pressed(Button::down)) {
-      _runAcc *= 0.95;
-      SerialUSB.print("_runAcc: ");
-      SerialUSB.println(static_cast<float>(_runAcc));
-    }
-    if (gb.buttons.pressed(Button::right)) {
-      _runDec *= 1.05;
-      SerialUSB.print("_runDec: ");
-      SerialUSB.println(static_cast<float>(_runDec));
-    }
-    if (gb.buttons.pressed(Button::left)) {
-      _runDec *= 0.95;
-      SerialUSB.print("_runDec: ");
-      SerialUSB.println(static_cast<float>(_runDec));
-    }
-  }
-
   // Handle horizontal movement
   x += velX;
   if (level.collisionsAt(getX(), getY(), getWidth(), getHeight(), collidedTiles)) {
@@ -184,7 +165,7 @@ PlayerState Player::internalUpdate(Level &level, BreakableTiles &breakableTiles,
   touchingGround = level.collisionsAt(getX(), getY() + 1, getWidth(), getHeight(), collidedTiles);
   for (int i = 0; i < collidedTiles.getCount(); i++) {
     TileInfo ti = collidedTiles.getTileInfo(i);
-    if (ti.propety == PROP_BREAK) {
+    if (ti.property == PROP_BREAK) {
       breakableTiles.triggerBlockAt(ti.x, ti.y);
     }
   }

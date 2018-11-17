@@ -25,3 +25,13 @@
 #define BREAK3_TILE 114
 
 #define LEVEL_TILE_SIZE 16
+
+// Tile properties
+#define PROP_EMPTY 0
+#define PROP_SOLID 1
+#define PROP_DEATH 2
+#define PROP_BREAK 3
+#define PROP_DISA1 4
+#define PROP_DISA2 5
+#define PROP_UP 6
+#define PROP_DOWN 7

@@ -1,4 +1,5 @@
 #include "DisappearingTiles.h"
+#include "Constants.h"
 
 void DisappearingTiles::loadLevel(Level &level) {
     count = 0;

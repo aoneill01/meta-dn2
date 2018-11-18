@@ -102,7 +102,7 @@ PlayerState Player::internalUpdate(Level &level, BreakableTiles &breakableTiles,
     }
   }
 
-  if (gb.buttons.pressed(Button::a)) {
+  if (gb.buttons.pressed(Button::b)) {
     if (touchingGround) {
       velY = _jumpVel;
     }
@@ -120,7 +120,7 @@ PlayerState Player::internalUpdate(Level &level, BreakableTiles &breakableTiles,
     }
     
   }
-  if (gb.buttons.repeat(Button::a, 0)) {
+  if (gb.buttons.repeat(Button::b, 0)) {
     if (velY < 0) gravity = _jumpGravity;
   }
 

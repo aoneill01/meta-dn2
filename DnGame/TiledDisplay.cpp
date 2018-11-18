@@ -77,6 +77,7 @@ void TiledDisplay::setCharacterFlipped(bool flipped) {
 }
 
 void TiledDisplay::draw() {
+  int additionalOffset = gb.buttons.repeat(Button::a, 0) ? 32768 : 0;
   int tileOffset, bufferOffset;
   
   // Draw slices of the screen, each 8 pixels tall
@@ -94,7 +95,7 @@ void TiledDisplay::draw() {
 
     // Partial right block
     
-    tileOffset = backgroundLayer[BACKGROUND_WIDTH * (yIndex / 2) + xIndexStart / 2] * 4 * TILE_SIZE * TILE_SIZE;
+    tileOffset = backgroundLayer[BACKGROUND_WIDTH * (yIndex / 2) + xIndexStart / 2] * 4 * TILE_SIZE * TILE_SIZE + additionalOffset;
     if (yIndex % 2 == 1) tileOffset += TILE_SIZE * TILE_SIZE * 2;
     if (xIndexStart % 2 == 1) tileOffset += TILE_SIZE * TILE_SIZE;
 
@@ -105,7 +106,7 @@ void TiledDisplay::draw() {
     }
     
     // Handle bottom half of tiles in this slice
-    tileOffset = backgroundLayer[BACKGROUND_WIDTH * ((yIndex+1) / 2) + xIndexStart / 2] * 4 * TILE_SIZE * TILE_SIZE;
+    tileOffset = backgroundLayer[BACKGROUND_WIDTH * ((yIndex+1) / 2) + xIndexStart / 2] * 4 * TILE_SIZE * TILE_SIZE + additionalOffset;
     if ((yIndex+1) % 2 == 1) tileOffset += TILE_SIZE * TILE_SIZE * 2;
     if (xIndexStart % 2 == 1) tileOffset += TILE_SIZE * TILE_SIZE;
     
@@ -116,7 +117,7 @@ void TiledDisplay::draw() {
     }
 
     for (int xIndexOffset = 1; xIndexOffset < SCREEN_WIDTH / TILE_SIZE; xIndexOffset++) {
-      tileOffset = backgroundLayer[BACKGROUND_WIDTH * (yIndex / 2) + (xIndexStart + xIndexOffset) / 2] * 4 * TILE_SIZE * TILE_SIZE;
+      tileOffset = backgroundLayer[BACKGROUND_WIDTH * (yIndex / 2) + (xIndexStart + xIndexOffset) / 2] * 4 * TILE_SIZE * TILE_SIZE + additionalOffset;
       if (yIndex % 2 == 1) tileOffset += TILE_SIZE * TILE_SIZE * 2;
       if ((xIndexStart + xIndexOffset) % 2 == 1) tileOffset += TILE_SIZE * TILE_SIZE;
       bufferOffset = xIndexOffset * TILE_SIZE;
@@ -132,7 +133,7 @@ void TiledDisplay::draw() {
         buffer[bufferOffset + 7 - xOffsetRemainder + (y - yOffsetRemainder) * SCREEN_WIDTH] = tilesData[tileOffset + 7 + y * TILE_SIZE];
       }
 
-      tileOffset = backgroundLayer[BACKGROUND_WIDTH * ((yIndex + 1) / 2) + (xIndexStart + xIndexOffset) / 2] * 4 * TILE_SIZE * TILE_SIZE;
+      tileOffset = backgroundLayer[BACKGROUND_WIDTH * ((yIndex + 1) / 2) + (xIndexStart + xIndexOffset) / 2] * 4 * TILE_SIZE * TILE_SIZE + additionalOffset;
       if ((yIndex + 1) % 2 == 1) tileOffset += TILE_SIZE * TILE_SIZE * 2;
       if ((xIndexStart + xIndexOffset) % 2 == 1) tileOffset += TILE_SIZE * TILE_SIZE;
       
@@ -150,7 +151,7 @@ void TiledDisplay::draw() {
 
     // Paritial left block
 
-    tileOffset = backgroundLayer[BACKGROUND_WIDTH * (yIndex / 2) + (xIndexStart + SCREEN_WIDTH / TILE_SIZE) / 2] * 4 * TILE_SIZE * TILE_SIZE;
+    tileOffset = backgroundLayer[BACKGROUND_WIDTH * (yIndex / 2) + (xIndexStart + SCREEN_WIDTH / TILE_SIZE) / 2] * 4 * TILE_SIZE * TILE_SIZE + additionalOffset;
     if (yIndex % 2 == 1) tileOffset += TILE_SIZE * TILE_SIZE * 2;
     if ((xIndexStart + SCREEN_WIDTH / TILE_SIZE) % 2 == 1) tileOffset += TILE_SIZE * TILE_SIZE;
 
@@ -161,7 +162,7 @@ void TiledDisplay::draw() {
     }
     
     // Handle bottom half of tiles in this slice
-    tileOffset = backgroundLayer[BACKGROUND_WIDTH * ((yIndex+1) / 2) + (xIndexStart + SCREEN_WIDTH / TILE_SIZE) / 2] * 4 * TILE_SIZE * TILE_SIZE;
+    tileOffset = backgroundLayer[BACKGROUND_WIDTH * ((yIndex+1) / 2) + (xIndexStart + SCREEN_WIDTH / TILE_SIZE) / 2] * 4 * TILE_SIZE * TILE_SIZE + additionalOffset;
     if ((yIndex+1) % 2 == 1) tileOffset += TILE_SIZE * TILE_SIZE * 2;
     if ((xIndexStart + SCREEN_WIDTH / TILE_SIZE) % 2 == 1) tileOffset += TILE_SIZE * TILE_SIZE;
     
@@ -180,7 +181,7 @@ void TiledDisplay::draw() {
 
     // Partial right block
 
-    tileOffset = foregroundLayer[FOREGROUND_WIDTH * (yIndex / 2) + xIndexStart / 2] * 4 * TILE_SIZE * TILE_SIZE;
+    tileOffset = foregroundLayer[FOREGROUND_WIDTH * (yIndex / 2) + xIndexStart / 2] * 4 * TILE_SIZE * TILE_SIZE + additionalOffset;
     if (yIndex % 2 == 1) tileOffset += TILE_SIZE * TILE_SIZE * 2;
     if (xIndexStart % 2 == 1) tileOffset += TILE_SIZE * TILE_SIZE;
 
@@ -191,7 +192,7 @@ void TiledDisplay::draw() {
     }
     
     // Handle bottom half of tiles in this slice
-    tileOffset = foregroundLayer[FOREGROUND_WIDTH * ((yIndex+1) / 2) + xIndexStart / 2] * 4 * TILE_SIZE * TILE_SIZE;
+    tileOffset = foregroundLayer[FOREGROUND_WIDTH * ((yIndex+1) / 2) + xIndexStart / 2] * 4 * TILE_SIZE * TILE_SIZE + additionalOffset;
     if ((yIndex+1) % 2 == 1) tileOffset += TILE_SIZE * TILE_SIZE * 2;
     if (xIndexStart % 2 == 1) tileOffset += TILE_SIZE * TILE_SIZE;
     
@@ -203,7 +204,7 @@ void TiledDisplay::draw() {
     
     for (int xIndexOffset = 1; xIndexOffset < SCREEN_WIDTH / TILE_SIZE; xIndexOffset++) {
       // Handle top half of tiles in this slice
-      tileOffset = foregroundLayer[FOREGROUND_WIDTH * (yIndex / 2) + (xIndexStart + xIndexOffset) / 2] * 4 * TILE_SIZE * TILE_SIZE;
+      tileOffset = foregroundLayer[FOREGROUND_WIDTH * (yIndex / 2) + (xIndexStart + xIndexOffset) / 2] * 4 * TILE_SIZE * TILE_SIZE + additionalOffset;
       if (yIndex % 2 == 1) tileOffset += TILE_SIZE * TILE_SIZE * 2;
       if ((xIndexStart + xIndexOffset) % 2 == 1) tileOffset += TILE_SIZE * TILE_SIZE;
       
@@ -221,7 +222,7 @@ void TiledDisplay::draw() {
       }
       
       // Handle bottom half of tiles in this slice
-      tileOffset = foregroundLayer[FOREGROUND_WIDTH * ((yIndex+1) / 2) + (xIndexStart + xIndexOffset) / 2] * 4 * TILE_SIZE * TILE_SIZE;
+      tileOffset = foregroundLayer[FOREGROUND_WIDTH * ((yIndex+1) / 2) + (xIndexStart + xIndexOffset) / 2] * 4 * TILE_SIZE * TILE_SIZE + additionalOffset;
       if ((yIndex+1) % 2 == 1) tileOffset += TILE_SIZE * TILE_SIZE * 2;
       if ((xIndexStart + xIndexOffset) % 2 == 1) tileOffset += TILE_SIZE * TILE_SIZE;
       
@@ -239,7 +240,7 @@ void TiledDisplay::draw() {
 
     // Paritial left block
 
-    tileOffset = foregroundLayer[FOREGROUND_WIDTH * (yIndex / 2) + (xIndexStart + SCREEN_WIDTH / TILE_SIZE) / 2] * 4 * TILE_SIZE * TILE_SIZE;
+    tileOffset = foregroundLayer[FOREGROUND_WIDTH * (yIndex / 2) + (xIndexStart + SCREEN_WIDTH / TILE_SIZE) / 2] * 4 * TILE_SIZE * TILE_SIZE + additionalOffset;
     if (yIndex % 2 == 1) tileOffset += TILE_SIZE * TILE_SIZE * 2;
     if ((xIndexStart + SCREEN_WIDTH / TILE_SIZE) % 2 == 1) tileOffset += TILE_SIZE * TILE_SIZE;
 
@@ -250,7 +251,7 @@ void TiledDisplay::draw() {
     }
     
     // Handle bottom half of tiles in this slice
-    tileOffset = foregroundLayer[FOREGROUND_WIDTH * ((yIndex+1) / 2) + (xIndexStart + SCREEN_WIDTH / TILE_SIZE) / 2] * 4 * TILE_SIZE * TILE_SIZE;
+    tileOffset = foregroundLayer[FOREGROUND_WIDTH * ((yIndex+1) / 2) + (xIndexStart + SCREEN_WIDTH / TILE_SIZE) / 2] * 4 * TILE_SIZE * TILE_SIZE + additionalOffset;
     if ((yIndex+1) % 2 == 1) tileOffset += TILE_SIZE * TILE_SIZE * 2;
     if ((xIndexStart + SCREEN_WIDTH / TILE_SIZE) % 2 == 1) tileOffset += TILE_SIZE * TILE_SIZE;
     

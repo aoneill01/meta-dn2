@@ -1,5 +1,7 @@
 #pragma once
 
+// #define SCREEN_RECORD 1
+
 // Screen width and height in pixels
 #define SCREEN_WIDTH 160
 #define SCREEN_HEIGHT 128

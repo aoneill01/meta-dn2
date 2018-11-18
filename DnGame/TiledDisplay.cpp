@@ -96,6 +96,10 @@ void TiledDisplay::draw() {
     // Partial right block
     
     tileOffset = backgroundLayer[BACKGROUND_WIDTH * (yIndex / 2) + xIndexStart / 2] * 4 * TILE_SIZE * TILE_SIZE + additionalOffset;
+    if (tileOffset - additionalOffset > 32768) {
+      if (gb.buttons.repeat(Button::a, 0)) tileOffset = 5376;
+      else tileOffset -= 32768;
+    }
     if (yIndex % 2 == 1) tileOffset += TILE_SIZE * TILE_SIZE * 2;
     if (xIndexStart % 2 == 1) tileOffset += TILE_SIZE * TILE_SIZE;
 
@@ -107,6 +111,10 @@ void TiledDisplay::draw() {
     
     // Handle bottom half of tiles in this slice
     tileOffset = backgroundLayer[BACKGROUND_WIDTH * ((yIndex+1) / 2) + xIndexStart / 2] * 4 * TILE_SIZE * TILE_SIZE + additionalOffset;
+    if (tileOffset - additionalOffset > 32768) {
+      if (gb.buttons.repeat(Button::a, 0)) tileOffset = 5376;
+      else tileOffset -= 32768;
+    }
     if ((yIndex+1) % 2 == 1) tileOffset += TILE_SIZE * TILE_SIZE * 2;
     if (xIndexStart % 2 == 1) tileOffset += TILE_SIZE * TILE_SIZE;
     
@@ -118,6 +126,10 @@ void TiledDisplay::draw() {
 
     for (int xIndexOffset = 1; xIndexOffset < SCREEN_WIDTH / TILE_SIZE; xIndexOffset++) {
       tileOffset = backgroundLayer[BACKGROUND_WIDTH * (yIndex / 2) + (xIndexStart + xIndexOffset) / 2] * 4 * TILE_SIZE * TILE_SIZE + additionalOffset;
+      if (tileOffset - additionalOffset > 32768) {
+        if (gb.buttons.repeat(Button::a, 0)) tileOffset = 5376;
+        else tileOffset -= 32768;
+      }
       if (yIndex % 2 == 1) tileOffset += TILE_SIZE * TILE_SIZE * 2;
       if ((xIndexStart + xIndexOffset) % 2 == 1) tileOffset += TILE_SIZE * TILE_SIZE;
       bufferOffset = xIndexOffset * TILE_SIZE;
@@ -134,6 +146,10 @@ void TiledDisplay::draw() {
       }
 
       tileOffset = backgroundLayer[BACKGROUND_WIDTH * ((yIndex + 1) / 2) + (xIndexStart + xIndexOffset) / 2] * 4 * TILE_SIZE * TILE_SIZE + additionalOffset;
+      if (tileOffset - additionalOffset > 32768) {
+        if (gb.buttons.repeat(Button::a, 0)) tileOffset = 5376;
+        else tileOffset -= 32768;
+      }
       if ((yIndex + 1) % 2 == 1) tileOffset += TILE_SIZE * TILE_SIZE * 2;
       if ((xIndexStart + xIndexOffset) % 2 == 1) tileOffset += TILE_SIZE * TILE_SIZE;
       
@@ -152,6 +168,10 @@ void TiledDisplay::draw() {
     // Paritial left block
 
     tileOffset = backgroundLayer[BACKGROUND_WIDTH * (yIndex / 2) + (xIndexStart + SCREEN_WIDTH / TILE_SIZE) / 2] * 4 * TILE_SIZE * TILE_SIZE + additionalOffset;
+    if (tileOffset - additionalOffset > 32768) {
+      if (gb.buttons.repeat(Button::a, 0)) tileOffset = 5376;
+      else tileOffset -= 32768;
+    }
     if (yIndex % 2 == 1) tileOffset += TILE_SIZE * TILE_SIZE * 2;
     if ((xIndexStart + SCREEN_WIDTH / TILE_SIZE) % 2 == 1) tileOffset += TILE_SIZE * TILE_SIZE;
 
@@ -163,6 +183,10 @@ void TiledDisplay::draw() {
     
     // Handle bottom half of tiles in this slice
     tileOffset = backgroundLayer[BACKGROUND_WIDTH * ((yIndex+1) / 2) + (xIndexStart + SCREEN_WIDTH / TILE_SIZE) / 2] * 4 * TILE_SIZE * TILE_SIZE + additionalOffset;
+    if (tileOffset - additionalOffset > 32768) {
+      if (gb.buttons.repeat(Button::a, 0)) tileOffset = 5376;
+      else tileOffset -= 32768;
+    }
     if ((yIndex+1) % 2 == 1) tileOffset += TILE_SIZE * TILE_SIZE * 2;
     if ((xIndexStart + SCREEN_WIDTH / TILE_SIZE) % 2 == 1) tileOffset += TILE_SIZE * TILE_SIZE;
     
@@ -182,6 +206,10 @@ void TiledDisplay::draw() {
     // Partial right block
 
     tileOffset = foregroundLayer[FOREGROUND_WIDTH * (yIndex / 2) + xIndexStart / 2] * 4 * TILE_SIZE * TILE_SIZE + additionalOffset;
+    if (tileOffset - additionalOffset > 32768) {
+      if (gb.buttons.repeat(Button::a, 0)) tileOffset = 5376;
+      else tileOffset -= 32768;
+    }
     if (yIndex % 2 == 1) tileOffset += TILE_SIZE * TILE_SIZE * 2;
     if (xIndexStart % 2 == 1) tileOffset += TILE_SIZE * TILE_SIZE;
 
@@ -193,6 +221,10 @@ void TiledDisplay::draw() {
     
     // Handle bottom half of tiles in this slice
     tileOffset = foregroundLayer[FOREGROUND_WIDTH * ((yIndex+1) / 2) + xIndexStart / 2] * 4 * TILE_SIZE * TILE_SIZE + additionalOffset;
+    if (tileOffset - additionalOffset > 32768) {
+      if (gb.buttons.repeat(Button::a, 0)) tileOffset = 5376;
+      else tileOffset -= 32768;
+    }
     if ((yIndex+1) % 2 == 1) tileOffset += TILE_SIZE * TILE_SIZE * 2;
     if (xIndexStart % 2 == 1) tileOffset += TILE_SIZE * TILE_SIZE;
     
@@ -205,6 +237,10 @@ void TiledDisplay::draw() {
     for (int xIndexOffset = 1; xIndexOffset < SCREEN_WIDTH / TILE_SIZE; xIndexOffset++) {
       // Handle top half of tiles in this slice
       tileOffset = foregroundLayer[FOREGROUND_WIDTH * (yIndex / 2) + (xIndexStart + xIndexOffset) / 2] * 4 * TILE_SIZE * TILE_SIZE + additionalOffset;
+      if (tileOffset - additionalOffset > 32768) {
+        if (gb.buttons.repeat(Button::a, 0)) tileOffset = 5376;
+        else tileOffset -= 32768;
+      }
       if (yIndex % 2 == 1) tileOffset += TILE_SIZE * TILE_SIZE * 2;
       if ((xIndexStart + xIndexOffset) % 2 == 1) tileOffset += TILE_SIZE * TILE_SIZE;
       
@@ -223,6 +259,10 @@ void TiledDisplay::draw() {
       
       // Handle bottom half of tiles in this slice
       tileOffset = foregroundLayer[FOREGROUND_WIDTH * ((yIndex+1) / 2) + (xIndexStart + xIndexOffset) / 2] * 4 * TILE_SIZE * TILE_SIZE + additionalOffset;
+      if (tileOffset - additionalOffset > 32768) {
+        if (gb.buttons.repeat(Button::a, 0)) tileOffset = 5376;
+        else tileOffset -= 32768;
+      }
       if ((yIndex+1) % 2 == 1) tileOffset += TILE_SIZE * TILE_SIZE * 2;
       if ((xIndexStart + xIndexOffset) % 2 == 1) tileOffset += TILE_SIZE * TILE_SIZE;
       
@@ -241,6 +281,10 @@ void TiledDisplay::draw() {
     // Paritial left block
 
     tileOffset = foregroundLayer[FOREGROUND_WIDTH * (yIndex / 2) + (xIndexStart + SCREEN_WIDTH / TILE_SIZE) / 2] * 4 * TILE_SIZE * TILE_SIZE + additionalOffset;
+    if (tileOffset - additionalOffset > 32768) {
+      if (gb.buttons.repeat(Button::a, 0)) tileOffset = 5376;
+      else tileOffset -= 32768;
+    }
     if (yIndex % 2 == 1) tileOffset += TILE_SIZE * TILE_SIZE * 2;
     if ((xIndexStart + SCREEN_WIDTH / TILE_SIZE) % 2 == 1) tileOffset += TILE_SIZE * TILE_SIZE;
 
@@ -252,6 +296,10 @@ void TiledDisplay::draw() {
     
     // Handle bottom half of tiles in this slice
     tileOffset = foregroundLayer[FOREGROUND_WIDTH * ((yIndex+1) / 2) + (xIndexStart + SCREEN_WIDTH / TILE_SIZE) / 2] * 4 * TILE_SIZE * TILE_SIZE + additionalOffset;
+    if (tileOffset - additionalOffset > 32768) {
+      if (gb.buttons.repeat(Button::a, 0)) tileOffset = 5376;
+      else tileOffset -= 32768;
+    }
     if ((yIndex+1) % 2 == 1) tileOffset += TILE_SIZE * TILE_SIZE * 2;
     if ((xIndexStart + SCREEN_WIDTH / TILE_SIZE) % 2 == 1) tileOffset += TILE_SIZE * TILE_SIZE;
     

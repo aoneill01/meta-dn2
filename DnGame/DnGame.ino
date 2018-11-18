@@ -1,5 +1,6 @@
 #include <Gamebuino-Meta.h>
 #include "Game.h"
+#include "Constants.h"
 
 Game game;
 

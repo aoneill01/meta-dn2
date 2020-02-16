@@ -76,7 +76,7 @@ void Level::loadLevel(int levelNumber) {
 
   for (int y = 0; y < FOREGROUND_HEIGHT; y++) {
     for (int x = 0; x < FOREGROUND_WIDTH; x++) {
-      setTile(x, y, levelFile.read());
+      // setTile(x, y, levelFile.read());
     }
   }
 }
